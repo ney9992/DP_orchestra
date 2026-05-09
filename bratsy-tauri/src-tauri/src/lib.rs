@@ -12,6 +12,8 @@ pub struct Settings {
     pub plant_sim_path: String,
     pub work_dir: String,
     pub scripts_dir: String,
+    pub plant_sim_exe: String,    // D-02: путь к PlantSimulation.exe
+    pub plant_sim_macro: String,  // D-03: путь к .spm макросу SimTalk
 }
 
 // ProcessMap хранит PID запущенных процессов: stage_id -> pid
@@ -29,6 +31,14 @@ pub struct StageStatusPayload {
 pub struct StageLogPayload {
     pub stage: String,
     pub line: String,
+}
+
+#[derive(Serialize, Clone)]
+pub struct StageResultsPayload {
+    pub stage: String,
+    pub load: f32,
+    pub throughput: f32,
+    pub cycle_time: f32,
 }
 
 fn settings_path() -> PathBuf {
