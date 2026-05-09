@@ -609,6 +609,15 @@ $cancelBtn.Add_Click({
 })
 $settingsPanel.Controls.Add($cancelBtn)
 
+# ===== Settings fields =====
+$fieldPlantSim = Add-SettingsField -parent $settingsPanel -labelText "Путь к файлу Plant Simulation (.spp)" -yPos 76  -placeholder "" -dialogType "file"
+$fieldWorkDir  = Add-SettingsField -parent $settingsPanel -labelText "Рабочий каталог"                       -yPos 160 -placeholder "" -dialogType "folder"
+$fieldScripts  = Add-SettingsField -parent $settingsPanel -labelText "Папка со скриптами / макросами"        -yPos 244 -placeholder "" -dialogType "folder"
+
+$tbPlantSimPath = $fieldPlantSim.TextBox
+$tbWorkDir      = $fieldWorkDir.TextBox
+$tbScriptsDir   = $fieldScripts.TextBox
+
 # Settings slide animation timer (same structure as CardTimer)
 $settingsPanelTargetW = 350
 $settingsAnimStep = 10
