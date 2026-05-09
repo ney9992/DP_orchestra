@@ -42,7 +42,11 @@ Plans:
 3. Пользователь нажимает кнопку остановки работающего этапа — процесс завершается и статус переходит в "Остановлен"
 4. При запуске этапа в панели логов построчно появляются сообщения о ходе выполнения в реальном времени
 5. При завершении или ошибке этапа появляется уведомление в UI (toast или статусная строка) без какого-либо дополнительного действия со стороны пользователя
-**Plans:** TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 02-01-PLAN.md — Rust backend: ProcessMap State, async run_stage, stop_stage, stage-status/stage-log события
+- [ ] 02-02-PLAN.md — JS frontend: event listeners, toggle логика, updatePill(), appendLog(), showToast(), лог-панель HTML
+- [ ] 02-03-PLAN.md — CSS: pill-running/done/error, stage-running hover, лог-панель, toast анимации
 **UI hint:** yes
 
 ### Phase 3: Интеграция Plant Simulation
@@ -63,7 +67,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Настройки и конфигурация | 2/2 | Complete | 2026-05-09 |
-| 2. Управление пайплайном | 0/? | Not started | - |
+| 2. Управление пайплайном | 0/3 | Not started | - |
 | 3. Интеграция Plant Simulation | 0/? | Not started | - |
 
 ## Coverage Map
@@ -84,4 +88,4 @@ Plans:
 **Mapped: 10/10 — 100% coverage**
 
 ---
-*Last updated: 2026-05-09 после выполнения Plan 01-02 — Phase 1 complete*
+*Last updated: 2026-05-09 — Phase 2 запланирована (3 плана, 3 волны)*
