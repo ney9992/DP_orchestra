@@ -155,14 +155,42 @@ function Add-MetricCard($parent, $x, $y, $w, $label, $value) {
     $p.Controls.Add($val)
 
     $parent.Controls.Add($p)
+    return $val
 }
 
 $metricsY = 96
-$metricW = 360
+$metricW = 210
 $metricGap = 16
-Add-MetricCard $card 24 $metricsY $metricW "Last sync" "2 min ago"
-Add-MetricCard $card (24 + $metricW + $metricGap) $metricsY $metricW "Drawings processed" "1,284"
-Add-MetricCard $card (24 + 2*($metricW + $metricGap)) $metricsY $metricW "Throughput" "94.2%"
+$script:lastSyncTime = Get-Date
+$script:appStartTime = Get-Date
+$script:totalAttempts = 0
+$script:failedAttempts = 0
+
+$syncLbl       = Add-MetricCard $card 24                                      $metricsY $metricW "Last sync"          "just now"
+$drawingsLbl   = Add-MetricCard $card (24 + 1*($metricW + $metricGap))        $metricsY $metricW "Drawings processed" "1,284"
+$throughputLbl = Add-MetricCard $card (24 + 2*($metricW + $metricGap))        $metricsY $metricW "Throughput"         "94.2%"
+$errorLbl      = Add-MetricCard $card (24 + 3*($metricW + $metricGap))        $metricsY $metricW "Error rate"         "0.0%"
+$uptimeLbl     = Add-MetricCard $card (24 + 4*($metricW + $metricGap))        $metricsY $metricW "Uptime"             "00:00:00"
+
+$metricsTimer = New-Object System.Windows.Forms.Timer
+$metricsTimer.Interval = 1000
+$metricsTimer.Add_Tick({
+    $elapsed = (Get-Date) - $script:lastSyncTime
+    if ($elapsed.TotalSeconds -lt 60) {
+        $syncLbl.Text = "$([int]$elapsed.TotalSeconds) sec ago"
+    } elseif ($elapsed.TotalHours -lt 1) {
+        $syncLbl.Text = "$([int]$elapsed.TotalMinutes) min ago"
+    } else {
+        $syncLbl.Text = "$([math]::Round($elapsed.TotalHours, 1)) h ago"
+    }
+    $up = (Get-Date) - $script:appStartTime
+    $uptimeLbl.Text = "{0:D2}:{1:D2}:{2:D2}" -f [int]$up.TotalHours, $up.Minutes, $up.Seconds
+    if ($script:totalAttempts -gt 0) {
+        $errPct = [math]::Round(($script:failedAttempts / $script:totalAttempts) * 100, 1)
+        $errorLbl.Text = "$errPct%"
+    }
+}.GetNewClosure())
+$metricsTimer.Start()
 
 # Section label
 $sectionLbl = New-Object System.Windows.Forms.Label
@@ -324,10 +352,13 @@ for ($i = 0; $i -lt $stages.Count; $i++) {
         while ($ctrl -and -not $ctrl.Tag) { $ctrl = $ctrl.Parent }
         if ($ctrl -and $ctrl.Tag) {
             $target = Join-Path $scriptDir $ctrl.Tag
+            $script:totalAttempts++
             try {
                 "test" | Out-File -FilePath $target -Encoding UTF8
+                $script:lastSyncTime = Get-Date
                 [System.Windows.Forms.MessageBox]::Show("Created: $target")
             } catch {
+                $script:failedAttempts++
                 [System.Windows.Forms.MessageBox]::Show("Error: $_")
             }
         }
@@ -376,8 +407,15 @@ $runBtn.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $runBtn.Cursor = [System.Windows.Forms.Cursors]::Hand
 $runBtn.Add_Click({
     $target = Join-Path $scriptDir "test_full_pipeline.txt"
-    "test" | Out-File -FilePath $target -Encoding UTF8
-    [System.Windows.Forms.MessageBox]::Show("Created: $target")
+    $script:totalAttempts++
+    try {
+        "test" | Out-File -FilePath $target -Encoding UTF8
+        $script:lastSyncTime = Get-Date
+        [System.Windows.Forms.MessageBox]::Show("Created: $target")
+    } catch {
+        $script:failedAttempts++
+        [System.Windows.Forms.MessageBox]::Show("Error: $_")
+    }
 })
 $card.Controls.Add($runBtn)
 
