@@ -11,12 +11,12 @@
 ## Current Position
 
 **Current Phase:** Phase 1 — Настройки и конфигурация  
-**Current Plan:** None (planning not started)  
-**Status:** Not started  
+**Current Plan:** 01-01 (Wave 1 из 2)  
+**Status:** Ready to execute  
 
 ```
 Progress: [ Phase 1 ] [ Phase 2 ] [ Phase 3 ]
-           Not started  Blocked    Blocked
+           Planned     Blocked    Blocked
 ```
 
 **Phase Goals:**
