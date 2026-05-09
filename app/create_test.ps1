@@ -675,9 +675,8 @@ $saveBtn.Add_Click({
     $settingsTimer.Start()
 }.GetNewClosure())
 
-# Settings slide animation timer (same structure as CardTimer)
-$settingsPanelTargetW = 350
-$settingsAnimStep = 10
+# Settings slide animation timer
+$settingsAnimStep = 12
 
 $settingsTimer = New-Object System.Windows.Forms.Timer
 $settingsTimer.Interval = 12
