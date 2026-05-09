@@ -21,8 +21,8 @@ progress:
 **Core Value:** По нажатию кнопки данные из всех подключённых систем проходят через пайплайн симуляции и возвращают экономические решения — оптимальная компоновка, загрузка, логистика, CAPEX.
 
 **Current Milestone:** v1 — Plant Simulation integration + pipeline control + observability  
-**Tech Stack:** PowerShell + Windows Forms, compiled via ps2exe  
-**Integration Method:** External scripts/macros (not COM API)
+**Tech Stack:** Tauri v2 (Rust backend + HTML/CSS/JS frontend, WebView2)  
+**Integration Method:** Rust `std::process::Command` → PowerShell scripts
 
 ## Current Position
 

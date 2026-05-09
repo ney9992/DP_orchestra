@@ -21,7 +21,9 @@
       "PowerShell(powershell -ExecutionPolicy Bypass -Command \"rustc --version; cargo --version\" 2>&1)",
       "PowerShell(& \"$env:USERPROFILE\\\\.cargo\\\\bin\\\\rustc.exe\" --version 2>&1; & \"$env:USERPROFILE\\\\.cargo\\\\bin\\\\cargo.exe\" --version 2>&1)",
       "PowerShell(powershell -ExecutionPolicy Bypass -Command \"cd 'e:\\\\Bratsy_DP'; npm create tauri-app@latest bratsy-tauri -- --template vanilla --manager npm --yes 2>&1\" 2>&1)",
-      "PowerShell(powershell -ExecutionPolicy Bypass -Command \"cd 'e:\\\\Bratsy_DP\\\\bratsy-tauri'; npm install 2>&1\" 2>&1)"
+      "PowerShell(powershell -ExecutionPolicy Bypass -Command \"cd 'e:\\\\Bratsy_DP\\\\bratsy-tauri'; npm install 2>&1\" 2>&1)",
+      "Bash(export PATH=\"$HOME/.cargo/bin:$PATH\")",
+      "Bash(npm run *)"
     ],
     "additionalDirectories": [
       "e:\\Bratsy_DP"
