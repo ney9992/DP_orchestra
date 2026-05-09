@@ -26,13 +26,13 @@ progress:
 
 ## Current Position
 
-**Current Phase:** Phase 2 — Управление пайплайном  
-**Current Plan:** 02-01 (Wave 1 из 3)  
-**Status:** Ready to execute  
+**Current Phase:** Phase 3 — Интеграция Plant Simulation  
+**Current Plan:** ready to plan  
+**Status:** Ready to discuss/plan  
 
 ```
 Progress: [ Phase 1 ] [ Phase 2 ] [ Phase 3 ]
-           Complete    Blocked    Blocked
+           Complete    Complete    Blocked
 ```
 
 **Phase Goals:**
