@@ -1,4 +1,5 @@
 const { invoke } = window.__TAURI__.core;
+const { listen } = window.__TAURI__.event;
 
 // ── Uptime ────────────────────────────────────────────────────
 const startTime = Date.now();
@@ -28,34 +29,184 @@ setInterval(() => {
   }
 }, 1000);
 
-// ── Stage cards ───────────────────────────────────────────────
+// ── Stage control (toggle: click = run, click again = stop) ──────
+const activeStages = new Set(); // stage IDs которые сейчас running
+
+const STAGE_LABELS = {
+  autocad:  'AutoCAD',
+  pdm:      'Vault PDM',
+  excel:    'Excel',
+  plantsim: 'Plant Simulation',
+  report:   'Report',
+};
+
 document.querySelectorAll('.stage-card').forEach(card => {
   card.addEventListener('click', async () => {
     const stage = card.dataset.stage;
-    totalAttempts++;
-    try {
-      await invoke('run_stage', { stage });
-      lastSyncTime = Date.now();
-    } catch (e) {
-      failedAttempts++;
-      console.error('Stage error:', e);
+
+    if (activeStages.has(stage)) {
+      // Повторный клик — остановить
+      try {
+        await invoke('stop_stage', { stage });
+      } catch (e) {
+        console.error('stop_stage error:', e);
+      }
+    } else {
+      // Первый клик — запустить
+      totalAttempts++;
+      clearLog();
+      setLogTitle(STAGE_LABELS[stage] || stage);
+      showLogPanel(true);
+      try {
+        await invoke('run_stage', { stage });
+        lastSyncTime = Date.now();
+      } catch (e) {
+        failedAttempts++;
+        console.error('run_stage error:', e);
+        updatePill(stage, 'error');
+        showToast(STAGE_LABELS[stage] || stage, 'error');
+      }
     }
   });
 });
 
-// ── Run full pipeline ─────────────────────────────────────────
-document.getElementById('runPipeline').addEventListener('click', async () => {
-  totalAttempts++;
-  try {
-    await invoke('run_full_pipeline');
-    lastSyncTime = Date.now();
-  } catch (e) {
-    failedAttempts++;
-    console.error('Pipeline error:', e);
-  }
-});
+// ── Pill & card state update ──────────────────────────────────────
+const PILL_MAP = {
+  waiting: { cls: 'pill-ready',   dot: 'dot-green', text: 'Ready' },
+  running: { cls: 'pill-running', dot: 'dot-blue',  text: 'Запущен' },
+  done:    { cls: 'pill-done',    dot: 'dot-green', text: 'Завершён' },
+  error:   { cls: 'pill-error',   dot: 'dot-red',   text: 'Ошибка' },
+};
 
-// ── Settings panel ────────────────────────────────────────────
+function updatePill(stage, status) {
+  const card = document.querySelector(`.stage-card[data-stage="${stage}"]`);
+  if (!card) return;
+
+  const pill = card.querySelector('.stage-pill');
+  if (!pill) return;
+
+  const cfg = PILL_MAP[status] || PILL_MAP.waiting;
+
+  pill.className = `stage-pill ${cfg.cls}`;
+  pill.innerHTML = `<span class="dot ${cfg.dot}"></span>${cfg.text}`;
+
+  if (status === 'running') {
+    card.classList.add('stage-running');
+    card.classList.remove('stage-active');
+    activeStages.add(stage);
+    setCardStopIcon(card, true);
+  } else {
+    card.classList.remove('stage-running');
+    card.classList.remove('stage-active');
+    activeStages.delete(stage);
+    setCardStopIcon(card, false);
+  }
+
+  // Скрыть лог-панель если все этапы остановлены
+  if (activeStages.size === 0 && (status === 'done' || status === 'error')) {
+    setTimeout(() => {
+      if (activeStages.size === 0) showLogPanel(false);
+    }, 3000);
+  }
+}
+
+function setCardStopIcon(card, isStop) {
+  const wrap = card.querySelector('.stage-icon-wrap');
+  if (!wrap) return;
+
+  if (isStop) {
+    wrap.dataset.origHtml = wrap.innerHTML;
+    wrap.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="#C0392B"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>`;
+  } else {
+    if (wrap.dataset.origHtml) {
+      wrap.innerHTML = wrap.dataset.origHtml;
+      delete wrap.dataset.origHtml;
+    }
+  }
+}
+
+// ── Log panel ─────────────────────────────────────────────────────
+const LOG_MAX_LINES = 200;
+let logLines = [];
+
+function showLogPanel(visible) {
+  const panel = document.getElementById('logPanel');
+  if (visible) {
+    panel.classList.add('visible');
+  } else {
+    panel.classList.remove('visible');
+  }
+}
+
+function setLogTitle(stageName) {
+  const el = document.getElementById('logTitle');
+  if (el) el.textContent = `● ${stageName} — лог`;
+}
+
+function clearLog() {
+  logLines = [];
+  const body = document.getElementById('logBody');
+  if (body) body.innerHTML = '';
+}
+
+function appendLog(stage, line) {
+  const body = document.getElementById('logBody');
+  if (!body) return;
+
+  const now = new Date();
+  const ts = [
+    String(now.getHours()).padStart(2, '0'),
+    String(now.getMinutes()).padStart(2, '0'),
+    String(now.getSeconds()).padStart(2, '0'),
+  ].join(':');
+
+  logLines.push(line);
+  if (logLines.length > LOG_MAX_LINES) {
+    logLines.shift();
+    body.firstChild?.remove();
+  }
+
+  const row = document.createElement('div');
+  row.className = 'log-line';
+  row.innerHTML = `<span class="log-ts">${ts}</span><span class="log-text">${escapeHtml(line)}</span>`;
+  body.appendChild(row);
+
+  body.scrollTop = body.scrollHeight;
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// ── Toast notifications ───────────────────────────────────────────
+function showToast(stageName, type) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  const isDone = type === 'done';
+  toast.className = `toast toast-${isDone ? 'done' : 'error'}`;
+  toast.textContent = isDone
+    ? `«${stageName}» завершён`
+    : `«${stageName}» — ошибка`;
+
+  container.appendChild(toast);
+
+  // Trigger reflow для CSS transition
+  toast.getBoundingClientRect();
+  toast.classList.add('toast-visible');
+
+  setTimeout(() => {
+    toast.classList.remove('toast-visible');
+    toast.classList.add('toast-hiding');
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
+// ── Settings panel ────────────────────────────────────────────────
 const panel    = document.getElementById('settingsPanel');
 const overlay  = document.getElementById('settingsOverlay');
 const gearBtn  = document.getElementById('gearBtn');
@@ -79,7 +230,6 @@ overlay.addEventListener('click', closeSettings);
 document.getElementById('btnCancel').addEventListener('click', closeSettings);
 
 // ── Browse dialogs (via Tauri dialog plugin or fallback) ──────
-// Tauri v2 dialog plugin — если не подключён, покажем alert с инструкцией
 document.querySelectorAll('.browse-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     const targetId = btn.dataset.target;
@@ -87,14 +237,12 @@ document.querySelectorAll('.browse-btn').forEach(btn => {
     const input    = document.getElementById(targetId);
 
     try {
-      // Tauri v2 dialog API
       const { open } = await import('https://cdn.jsdelivr.net/npm/@tauri-apps/plugin-dialog@2/index.js').catch(() => ({ open: null }));
 
       if (open) {
         const selected = await open({ directory: type === 'folder', multiple: false });
         if (selected) { input.value = selected; clearError(targetId); }
       } else {
-        // Fallback: prompt (временно до добавления плагина)
         const val = prompt(type === 'file' ? 'Введите путь к файлу .spp:' : 'Введите путь к папке:');
         if (val) { input.value = val; clearError(targetId); }
       }
@@ -113,7 +261,6 @@ document.getElementById('btnSave').addEventListener('click', async () => {
 
   let hasError = false;
 
-  // Validate (Tauri can't check paths from JS — minimal check)
   [[plantSim, 'inputPlantSim', 'errPlantSim'],
    [workDir,  'inputWorkDir',  'errWorkDir'],
    [scripts,  'inputScripts',  'errScripts']].forEach(([val, inputId, errId]) => {
@@ -148,14 +295,38 @@ function showError(inputId, errId) {
 function clearError(inputId) {
   const row = document.getElementById(inputId)?.closest('.field-row');
   if (row) row.classList.remove('error');
-  // clear all errors for this field
   document.querySelectorAll('.field-error').forEach(el => {
     if (el.id === 'err' + inputId.replace('input', '')) el.classList.remove('visible');
   });
 }
 
-// ── Load settings on start ────────────────────────────────────
+// ── Run full pipeline — заглушка до Phase 3 ───────────────────────
+document.getElementById('runPipeline')?.addEventListener('click', () => {
+  console.info('Full pipeline: будет реализовано в Phase 3');
+});
+
+// ── Load settings on start + Tauri event listeners ───────────────
 window.addEventListener('DOMContentLoaded', async () => {
+  // Tauri event listeners
+  await listen('stage-status', (event) => {
+    const { stage, status } = event.payload;
+    updatePill(stage, status);
+
+    if (status === 'done' || status === 'error') {
+      const label = STAGE_LABELS[stage] || stage;
+      setLogTitle(`${label} — ${status === 'done' ? 'Завершён' : 'Ошибка'}`);
+      showToast(label, status);
+      if (status === 'done') lastSyncTime = Date.now();
+      else failedAttempts++;
+    }
+  });
+
+  await listen('stage-log', (event) => {
+    const { stage, line } = event.payload;
+    appendLog(stage, line);
+  });
+
+  // Загрузить настройки
   try {
     const s = await invoke('get_settings');
     if (s.plant_sim_path) document.getElementById('inputPlantSim').value = s.plant_sim_path;
