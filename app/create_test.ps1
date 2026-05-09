@@ -49,60 +49,67 @@ function Get-LogoImage($logoFile, $fallbackGlyph, $bgColor, $fgColor) {
     return $bmp
 }
 
-# ===== Settings field helper =====
+# ===== Settings field helper (iOS-style) =====
 function Add-SettingsField {
     param(
         [System.Windows.Forms.Panel]$parent,
         [string]$labelText,
         [int]$yPos,
         [string]$placeholder,
-        [string]$dialogType   # "file" or "folder"
+        [string]$dialogType
     )
 
-    $fieldW = 310  # ширина TextBox
+    $colFieldBg  = [System.Drawing.Color]::FromArgb(242, 242, 247)
+    $colAccent   = [System.Drawing.Color]::FromArgb(23, 95, 165)
+
+    # Field card container
+    $box = New-Object System.Windows.Forms.Panel
+    $box.Location = New-Object System.Drawing.Point(16, $yPos)
+    $box.Size = New-Object System.Drawing.Size(332, 58)
+    $box.BackColor = $colFieldBg
+    $parent.Controls.Add($box)
 
     $lbl = New-Object System.Windows.Forms.Label
     $lbl.Text = $labelText
-    $lbl.Location = New-Object System.Drawing.Point(20, $yPos)
-    $lbl.Size = New-Object System.Drawing.Size($fieldW, 18)
-    $lbl.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
-    $lbl.ForeColor = $colTextSec
-    $lbl.BackColor = $colBgCard
-    $parent.Controls.Add($lbl)
+    $lbl.Location = New-Object System.Drawing.Point(12, 7)
+    $lbl.Size = New-Object System.Drawing.Size(308, 14)
+    $lbl.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+    $lbl.ForeColor = [System.Drawing.Color]::FromArgb(130, 130, 140)
+    $lbl.BackColor = [System.Drawing.Color]::Transparent
+    $box.Controls.Add($lbl)
 
     $tb = New-Object System.Windows.Forms.TextBox
     $tb.ReadOnly = $true
-    $tb.Location = New-Object System.Drawing.Point(20, ($yPos + 22))
-    $tb.Size = New-Object System.Drawing.Size(270, 24)
-    $tb.BackColor = $colBgPage
-    $tb.ForeColor = $colTextPrimary
-    $tb.BorderStyle = "FixedSingle"
-    $tb.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-    $tb.Text = $placeholder
-    $parent.Controls.Add($tb)
-
-    # Метка ошибки (скрыта по умолчанию)
-    $errLbl = New-Object System.Windows.Forms.Label
-    $errLbl.Text = "Путь не найден"
-    $errLbl.Location = New-Object System.Drawing.Point(20, ($yPos + 50))
-    $errLbl.Size = New-Object System.Drawing.Size($fieldW, 16)
-    $errLbl.Font = New-Object System.Drawing.Font("Segoe UI", 8)
-    $errLbl.ForeColor = $colErrorText
-    $errLbl.BackColor = $colBgCard
-    $errLbl.Visible = $false
-    $parent.Controls.Add($errLbl)
+    $tb.Location = New-Object System.Drawing.Point(12, 26)
+    $tb.Size = New-Object System.Drawing.Size(274, 22)
+    $tb.BackColor = $colFieldBg
+    $tb.ForeColor = [System.Drawing.Color]::FromArgb(28, 28, 30)
+    $tb.BorderStyle = "None"
+    $tb.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+    $box.Controls.Add($tb)
 
     $browseBtn = New-Object System.Windows.Forms.Button
-    $browseBtn.Text = "..."
-    $browseBtn.Location = New-Object System.Drawing.Point(296, ($yPos + 20))
-    $browseBtn.Size = New-Object System.Drawing.Size(34, 28)
+    $browseBtn.Text = [char]0x2026
+    $browseBtn.Location = New-Object System.Drawing.Point(292, 16)
+    $browseBtn.Size = New-Object System.Drawing.Size(28, 26)
     $browseBtn.FlatStyle = "Flat"
-    $browseBtn.FlatAppearance.BorderColor = $colBorder
-    $browseBtn.FlatAppearance.BorderSize = 1
-    $browseBtn.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+    $browseBtn.FlatAppearance.BorderSize = 0
+    $browseBtn.BackColor = $colFieldBg
+    $browseBtn.ForeColor = $colAccent
+    $browseBtn.Font = New-Object System.Drawing.Font("Segoe UI", 10)
     $browseBtn.Cursor = [System.Windows.Forms.Cursors]::Hand
-    $browseBtn.BackColor = $colBgCard
-    $browseBtn.ForeColor = $colTextPrimary
+    $box.Controls.Add($browseBtn)
+
+    # Error label (below box, on parent)
+    $errLbl = New-Object System.Windows.Forms.Label
+    $errLbl.Text = "  Путь не найден"
+    $errLbl.Location = New-Object System.Drawing.Point(16, ($yPos + 60))
+    $errLbl.Size = New-Object System.Drawing.Size(200, 14)
+    $errLbl.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+    $errLbl.ForeColor = $colErrorText
+    $errLbl.BackColor = [System.Drawing.Color]::White
+    $errLbl.Visible = $false
+    $parent.Controls.Add($errLbl)
 
     if ($dialogType -eq "file") {
         $browseBtn.Add_Click({
@@ -111,7 +118,7 @@ function Add-SettingsField {
             $dlg.Title = "Выберите файл Plant Simulation"
             if ($dlg.ShowDialog() -eq "OK") {
                 $tb.Text = $dlg.FileName
-                $tb.BackColor = $colBgPage
+                $box.BackColor = $colFieldBg; $tb.BackColor = $colFieldBg
                 $errLbl.Visible = $false
             }
         }.GetNewClosure())
@@ -121,14 +128,13 @@ function Add-SettingsField {
             $dlg.Description = "Выберите папку"
             if ($dlg.ShowDialog() -eq "OK") {
                 $tb.Text = $dlg.SelectedPath
-                $tb.BackColor = $colBgPage
+                $box.BackColor = $colFieldBg; $tb.BackColor = $colFieldBg
                 $errLbl.Visible = $false
             }
         }.GetNewClosure())
     }
-    $parent.Controls.Add($browseBtn)
 
-    return [PSCustomObject]@{ TextBox = $tb; ErrorLabel = $errLbl }
+    return [PSCustomObject]@{ TextBox = $tb; ErrorLabel = $errLbl; Box = $box }
 }
 
 # ===== Form =====
