@@ -59,7 +59,11 @@ Plans:
 2. Пока симуляция выполняется, этап отображает статус "Запущен" и лог выдаёт сообщения от процесса
 3. После завершения симуляции в UI появляются числовые результаты: загрузка линии (%), пропускная способность (ед./ч), время цикла (сек)
 4. Если PlantSim не найден или файл .spp не существует, пользователь получает понятное сообщение об ошибке (не падение приложения)
-**Plans:** TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 03-00-PLAN.md — Wave 0: mock-plantsim.ps1 (PowerShell-заглушка PlantSim для разработки)
+- [ ] 03-01-PLAN.md — Rust backend: Settings расширение, StageResultsPayload, run_stage plantsim-ветка, results.txt parsing, stage-results event
+- [ ] 03-02-PLAN.md — Frontend: 2 поля настроек (exe+spm), панель результатов (3 карточки), listen stage-results, showConfigError, CSS transition
 **UI hint:** yes
 
 ## Progress Table
@@ -68,7 +72,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Настройки и конфигурация | 2/2 | Complete | 2026-05-09 |
 | 2. Управление пайплайном | 3/3 | Complete | 2026-05-09 |
-| 3. Интеграция Plant Simulation | 0/? | Not started | - |
+| 3. Интеграция Plant Simulation | 0/3 | In progress | - |
 
 ## Coverage Map
 
@@ -88,4 +92,4 @@ Plans:
 **Mapped: 10/10 — 100% coverage**
 
 ---
-*Last updated: 2026-05-09 — Phase 2 complete (pipeline control, real-time logs, toast notifications)*
+*Last updated: 2026-05-10 — Phase 3 planned (3 plans: mock, Rust backend, frontend)*
