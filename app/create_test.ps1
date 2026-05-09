@@ -645,17 +645,18 @@ $tbScriptsDir   = $fieldScripts.TextBox
 $saveBtn.Add_Click({
     $hasError = $false
 
-    # Валидация: Test-Path для непустых полей (D-10, D-11, D-12)
+    $colFieldBg = [System.Drawing.Color]::FromArgb(242, 242, 247)
     foreach ($field in @($fieldPlantSim, $fieldWorkDir, $fieldScripts)) {
         $tb  = $field.TextBox
         $err = $field.ErrorLabel
+        $box = $field.Box
         if ($tb.Text -ne "" -and -not (Test-Path $tb.Text)) {
-            $tb.BackColor = $colErrorBg
-            $err.Visible  = $true
-            $hasError      = $true
+            $box.BackColor = $colErrorBg; $tb.BackColor = $colErrorBg
+            $err.Visible   = $true
+            $hasError       = $true
         } else {
-            $tb.BackColor = $colBgPage
-            $err.Visible  = $false
+            $box.BackColor = $colFieldBg; $tb.BackColor = $colFieldBg
+            $err.Visible   = $false
         }
     }
 
