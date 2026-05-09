@@ -91,8 +91,8 @@ None
 
 ## Session Continuity
 
-**Last session:** 2026-05-09 — Phase 1 закрыта. UI мигрирован на Tauri (Rust + WebView2). Настройки работают, дизайн утверждён.  
-**Next action:** `/gsd-discuss-phase 2` (Phase 2 — pipeline control: запуск/остановка этапов, real-time лог, уведомления)
+**Last session:** 2026-05-09 — Phase 2 спланирована: 3 плана (Rust backend, JS frontend, CSS).  
+**Next action:** `/gsd-execute-phase 2`
 
 ---
 *Last updated: 2026-05-09*
