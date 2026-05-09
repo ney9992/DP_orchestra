@@ -43,7 +43,7 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| UI-02 | Phase 1 | Pending |
+| UI-02 | Phase 1 | In Progress (shell ready, fields pending in 01-02) |
 | INT-03 | Phase 1 | Pending |
 | PIPE-01 | Phase 2 | Pending |
 | PIPE-02 | Phase 2 | Pending |
