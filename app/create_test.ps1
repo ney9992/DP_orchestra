@@ -545,67 +545,89 @@ $runBtn.Add_Click({
 })
 $card.Controls.Add($runBtn)
 
-# ===== Settings Panel =====
+# ===== Settings Panel (iOS 26-inspired) =====
+$settingsPanelTargetW = 364
+
 $settingsPanel = New-Object System.Windows.Forms.Panel
-$settingsPanel.Location = New-Object System.Drawing.Point(810, 0)
+$settingsPanel.Location = New-Object System.Drawing.Point(796, 0)
 $settingsPanel.Size = New-Object System.Drawing.Size(0, 560)
-$settingsPanel.BackColor = $colBgCard
+$settingsPanel.BackColor = [System.Drawing.Color]::White
 $settingsPanel.Visible = $false
-$settingsPanel.Add_Paint({
-    $g = $_.Graphics
-    $g.SmoothingMode = "AntiAlias"
-    $pen = New-Object System.Drawing.Pen $colBorder, 1
-    $g.DrawRectangle($pen, 0, 0, $settingsPanel.Width - 1, $settingsPanel.Height - 1)
-})
+# Enable double-buffering — eliminates pixel artifacts during animation
+$settingsPanel.GetType().GetProperty(
+    "DoubleBuffered",
+    [System.Reflection.BindingFlags]::Instance -bor [System.Reflection.BindingFlags]::NonPublic
+).SetValue($settingsPanel, $true, $null)
 $card.Controls.Add($settingsPanel)
 
-# Settings panel header
+# Left accent bar
+$accentBar = New-Object System.Windows.Forms.Panel
+$accentBar.Location = New-Object System.Drawing.Point(0, 0)
+$accentBar.Size = New-Object System.Drawing.Size(3, 560)
+$accentBar.BackColor = $colBorderInfo
+$settingsPanel.Controls.Add($accentBar)
+
+# Title
 $settingsTitleLbl = New-Object System.Windows.Forms.Label
 $settingsTitleLbl.Text = "Настройки"
-$settingsTitleLbl.Location = New-Object System.Drawing.Point(20, 20)
-$settingsTitleLbl.Size = New-Object System.Drawing.Size(260, 26)
-$settingsTitleLbl.Font = New-Object System.Drawing.Font("Segoe UI Semibold", 12)
-$settingsTitleLbl.ForeColor = $colTextPrimary
-$settingsTitleLbl.BackColor = $colBgCard
+$settingsTitleLbl.Location = New-Object System.Drawing.Point(20, 16)
+$settingsTitleLbl.Size = New-Object System.Drawing.Size(300, 32)
+$settingsTitleLbl.Font = New-Object System.Drawing.Font("Segoe UI", 15, [System.Drawing.FontStyle]::Regular)
+$settingsTitleLbl.ForeColor = [System.Drawing.Color]::FromArgb(28, 28, 30)
+$settingsTitleLbl.BackColor = [System.Drawing.Color]::White
 $settingsPanel.Controls.Add($settingsTitleLbl)
 
+# Divider under title
 $settingsDivider = New-Object System.Windows.Forms.Panel
-$settingsDivider.Location = New-Object System.Drawing.Point(0, 56)
-$settingsDivider.Size = New-Object System.Drawing.Size(350, 1)
-$settingsDivider.BackColor = $colBorder
+$settingsDivider.Location = New-Object System.Drawing.Point(3, 56)
+$settingsDivider.Size = New-Object System.Drawing.Size(400, 1)
+$settingsDivider.BackColor = [System.Drawing.Color]::FromArgb(230, 230, 235)
 $settingsPanel.Controls.Add($settingsDivider)
+
+# Section label
+$fieldsSectionLbl = New-Object System.Windows.Forms.Label
+$fieldsSectionLbl.Text = "ПУТИ К ФАЙЛАМ"
+$fieldsSectionLbl.Location = New-Object System.Drawing.Point(20, 66)
+$fieldsSectionLbl.Size = New-Object System.Drawing.Size(200, 14)
+$fieldsSectionLbl.Font = New-Object System.Drawing.Font("Segoe UI", 7.5)
+$fieldsSectionLbl.ForeColor = [System.Drawing.Color]::FromArgb(140, 140, 150)
+$fieldsSectionLbl.BackColor = [System.Drawing.Color]::White
+$settingsPanel.Controls.Add($fieldsSectionLbl)
+
+# Fields — yPos step: 58 (box) + 16 (error+gap) = 74px
+$fieldPlantSim = Add-SettingsField -parent $settingsPanel -labelText "Путь к файлу Plant Simulation (.spp)" -yPos 86  -placeholder "" -dialogType "file"
+$fieldWorkDir  = Add-SettingsField -parent $settingsPanel -labelText "Рабочий каталог"                       -yPos 160 -placeholder "" -dialogType "folder"
+$fieldScripts  = Add-SettingsField -parent $settingsPanel -labelText "Папка со скриптами / макросами"        -yPos 234 -placeholder "" -dialogType "folder"
 
 # Footer divider
 $settingsFootDivider = New-Object System.Windows.Forms.Panel
-$settingsFootDivider.Location = New-Object System.Drawing.Point(0, 500)
-$settingsFootDivider.Size = New-Object System.Drawing.Size(350, 1)
-$settingsFootDivider.BackColor = $colBorder
+$settingsFootDivider.Location = New-Object System.Drawing.Point(3, 500)
+$settingsFootDivider.Size = New-Object System.Drawing.Size(400, 1)
+$settingsFootDivider.BackColor = [System.Drawing.Color]::FromArgb(230, 230, 235)
 $settingsPanel.Controls.Add($settingsFootDivider)
 
-# Save button
+# Save button — iOS blue
 $saveBtn = New-Object System.Windows.Forms.Button
 $saveBtn.Text = "Сохранить"
-$saveBtn.Location = New-Object System.Drawing.Point(20, 512)
-$saveBtn.Size = New-Object System.Drawing.Size(140, 34)
-$saveBtn.BackColor = $colBgCard
-$saveBtn.ForeColor = $colTextPrimary
+$saveBtn.Location = New-Object System.Drawing.Point(16, 512)
+$saveBtn.Size = New-Object System.Drawing.Size(168, 36)
+$saveBtn.BackColor = $colBorderInfo
+$saveBtn.ForeColor = [System.Drawing.Color]::White
 $saveBtn.FlatStyle = "Flat"
-$saveBtn.FlatAppearance.BorderColor = $colBorder
-$saveBtn.FlatAppearance.BorderSize = 1
-$saveBtn.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$saveBtn.FlatAppearance.BorderSize = 0
+$saveBtn.Font = New-Object System.Drawing.Font("Segoe UI Semibold", 9.5)
 $saveBtn.Cursor = [System.Windows.Forms.Cursors]::Hand
 $settingsPanel.Controls.Add($saveBtn)
 
-# Cancel button
+# Cancel button — ghost
 $cancelBtn = New-Object System.Windows.Forms.Button
 $cancelBtn.Text = "Отмена"
-$cancelBtn.Location = New-Object System.Drawing.Point(176, 512)
-$cancelBtn.Size = New-Object System.Drawing.Size(140, 34)
-$cancelBtn.BackColor = $colBgCard
-$cancelBtn.ForeColor = $colTextSec
+$cancelBtn.Location = New-Object System.Drawing.Point(196, 512)
+$cancelBtn.Size = New-Object System.Drawing.Size(140, 36)
+$cancelBtn.BackColor = [System.Drawing.Color]::White
+$cancelBtn.ForeColor = [System.Drawing.Color]::FromArgb(100, 100, 110)
 $cancelBtn.FlatStyle = "Flat"
-$cancelBtn.FlatAppearance.BorderColor = $colBorder
-$cancelBtn.FlatAppearance.BorderSize = 1
+$cancelBtn.FlatAppearance.BorderSize = 0
 $cancelBtn.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $cancelBtn.Cursor = [System.Windows.Forms.Cursors]::Hand
 $cancelBtn.Add_Click({
@@ -615,11 +637,6 @@ $cancelBtn.Add_Click({
     }
 })
 $settingsPanel.Controls.Add($cancelBtn)
-
-# ===== Settings fields =====
-$fieldPlantSim = Add-SettingsField -parent $settingsPanel -labelText "Путь к файлу Plant Simulation (.spp)" -yPos 76  -placeholder "" -dialogType "file"
-$fieldWorkDir  = Add-SettingsField -parent $settingsPanel -labelText "Рабочий каталог"                       -yPos 160 -placeholder "" -dialogType "folder"
-$fieldScripts  = Add-SettingsField -parent $settingsPanel -labelText "Папка со скриптами / макросами"        -yPos 244 -placeholder "" -dialogType "folder"
 
 $tbPlantSimPath = $fieldPlantSim.TextBox
 $tbWorkDir      = $fieldWorkDir.TextBox
