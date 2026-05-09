@@ -122,6 +122,41 @@ $statusPanel.Add_Paint({
 })
 $card.Controls.Add($statusPanel)
 
+# ===== Gear button (settings trigger) =====
+$script:settingsPanelOpen = $false
+
+$gearBtn = New-Object System.Windows.Forms.Panel
+$gearBtn.Location = New-Object System.Drawing.Point(1080, 22)
+$gearBtn.Size = New-Object System.Drawing.Size(40, 40)
+$gearBtn.BackColor = $colBgCard
+$gearBtn.Cursor = [System.Windows.Forms.Cursors]::Hand
+$gearBtn.Add_Paint({
+    $g = $_.Graphics
+    $g.SmoothingMode = "AntiAlias"
+    $g.TextRenderingHint = "AntiAlias"
+    $f = New-Object System.Drawing.Font("Segoe UI", 18)
+    $brush = New-Object System.Drawing.SolidBrush $colTextSec
+    $sf = New-Object System.Drawing.StringFormat
+    $sf.Alignment = "Center"
+    $sf.LineAlignment = "Center"
+    $g.DrawString([char]0x2699, $f, $brush, (New-Object System.Drawing.RectangleF 0, 0, 40, 40), $sf)
+})
+$gearBtn.Add_Click({
+    if (-not $settingsTimer.Enabled) {
+        if ($script:settingsPanelOpen) {
+            $script:settingsClosing = $true
+            $settingsTimer.Start()
+        } else {
+            $script:settingsClosing = $false
+            $settingsPanel.Width = 0
+            $settingsPanel.Visible = $true
+            $settingsPanel.BringToFront()
+            $settingsTimer.Start()
+        }
+    }
+})
+$card.Controls.Add($gearBtn)
+
 # Header divider
 $divider1 = New-Object System.Windows.Forms.Panel
 $divider1.Location = New-Object System.Drawing.Point(24, 78)
