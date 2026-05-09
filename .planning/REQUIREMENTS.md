@@ -43,16 +43,16 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| INT-01 | TBD | — |
-| INT-02 | TBD | — |
-| INT-03 | TBD | — |
-| PIPE-01 | TBD | — |
-| PIPE-02 | TBD | — |
-| PIPE-03 | TBD | — |
-| PIPE-04 | TBD | — |
-| UI-01 | TBD | — |
-| UI-02 | TBD | — |
-| UI-03 | TBD | — |
+| UI-02 | Phase 1 | Pending |
+| INT-03 | Phase 1 | Pending |
+| PIPE-01 | Phase 2 | Pending |
+| PIPE-02 | Phase 2 | Pending |
+| PIPE-03 | Phase 2 | Pending |
+| UI-01 | Phase 2 | Pending |
+| UI-03 | Phase 2 | Pending |
+| INT-01 | Phase 3 | Pending |
+| INT-02 | Phase 3 | Pending |
+| PIPE-04 | Phase 3 | Pending |
 
 ---
-*Last updated: 2026-05-09 после инициализации проекта*
+*Last updated: 2026-05-09 после создания roadmap*
