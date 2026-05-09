@@ -62,6 +62,11 @@ Progress: [ Phase 1 ] [ Phase 2 ] [ Phase 3 ]
 - Panel+Add_Paint for gear button: consistent with headerIcon pattern, avoids Button rendering issues
 - Timer.Enabled guard before Start(): prevents double-click animation corruption (T-01-02)
 - GetNewClosure() on settingsTimer tick: captures panel vars in closure, matches metricsTimer pattern
+- Add-SettingsField helper returns PSCustomObject {TextBox; ErrorLabel}: enables saveBtn.Add_Click to access both controls
+- GetNewClosure() in dialog handlers: captures $tb/$errLbl from function outer scope
+- Test-Path validate-on-Save only (not on-blur), empty fields are valid (D-10, D-12)
+- settings.json in $PSScriptRoot: flat JSON with PlantSimPath, WorkDir, ScriptsDir keys (D-07)
+- Corrupt JSON in Add_Load silently ignored via try/catch: app does not crash (T-02-04)
 
 ### Existing Prototype
 
