@@ -175,6 +175,42 @@ async fn run_stage(
             }
         };
 
+        // D-08: читаем results.txt только для plantsim, после child.wait()
+        if stage_is_plantsim {
+            let results_path = std::path::Path::new(&work_dir_for_results).join("results.txt");
+            match std::fs::read_to_string(&results_path) {
+                Ok(content) => {
+                    let mut load       = 0f32;
+                    let mut throughput = 0f32;
+                    let mut cycle_time = 0f32;
+                    for line in content.lines() {
+                        if let Some((k, v)) = line.split_once('=') {
+                            match k.trim() {
+                                "load"       => load       = v.trim().parse().unwrap_or(0.0),
+                                "throughput" => throughput = v.trim().parse().unwrap_or(0.0),
+                                "cycle_time" => cycle_time = v.trim().parse().unwrap_or(0.0),
+                                _ => {}
+                            }
+                        }
+                    }
+                    // D-09: emit stage-results с числовыми результатами
+                    let _ = app_clone.emit("stage-results", StageResultsPayload {
+                        stage: "plantsim".into(),
+                        load,
+                        throughput,
+                        cycle_time,
+                    });
+                }
+                Err(_) => {
+                    // D-08: файл отсутствует — warning в лог, не ошибка
+                    let _ = app_clone.emit("stage-log", StageLogPayload {
+                        stage: stage_clone.clone(),
+                        line: "[warning] results.txt не найден — результаты недоступны".into(),
+                    });
+                }
+            }
+        }
+
         {
             let mut map = state_arc.lock().unwrap();
             map.remove(&stage_clone);
