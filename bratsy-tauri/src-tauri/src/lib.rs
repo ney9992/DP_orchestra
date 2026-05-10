@@ -104,15 +104,32 @@ async fn run_stage(
         status: "running".to_string(),
     });
 
-    // Имитация скрипта — в Phase 3 заменится реальным PowerShell-вызовом
-    let script = format!(
-        "for ($i=1; $i -le 5; $i++) {{ Write-Output '[{stage}] step $i/5'; Start-Sleep -Milliseconds 400 }}; Write-Output 'done'",
-        stage = stage
-    );
+    // Phase 3: для plantsim — реальный запуск; для остальных — mock
+    let (cmd_program, cmd_args_owned): (String, Vec<String>) = if stage == "plantsim" {
+        let s = get_settings(); // sync fn — OK в async (Pitfall #1: читаем ДО spawn_blocking)
+        let plant_sim_exe   = s.plant_sim_exe.clone();
+        let plant_sim_macro = s.plant_sim_macro.clone();
+        let plant_sim_path  = s.plant_sim_path.clone();
+        (plant_sim_exe, vec!["/S".into(), plant_sim_macro, plant_sim_path])
+    } else {
+        let script = format!(
+            "for ($i=1; $i -le 5; $i++) {{ Write-Output '[{stage}] step $i/5'; Start-Sleep -Milliseconds 400 }}; Write-Output 'done'",
+            stage = stage
+        );
+        ("powershell".into(), vec!["-ExecutionPolicy".into(), "Bypass".into(), "-Command".into(), script])
+    };
+
+    // Также читаем work_dir ДО spawn_blocking (Pitfall #1)
+    let work_dir_for_results = if stage == "plantsim" {
+        get_settings().work_dir.clone()
+    } else {
+        String::new()
+    };
+    let stage_is_plantsim = stage == "plantsim";
 
     // CR-01 fix: stderr(Stdio::null()) — предотвращает deadlock при заполнении pipe-буфера stderr
-    let mut child = Command::new("powershell")
-        .args(["-ExecutionPolicy", "Bypass", "-Command", &script])
+    let mut child = Command::new(&cmd_program)
+        .args(&cmd_args_owned)
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .spawn()
