@@ -292,6 +292,11 @@ async fn run_plantsim(
     state: tauri::State<'_, ProcessMap>,
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
+    // CR-01: валидация method — разрешены только безопасные символы SimTalk-имени
+    if !method.chars().all(|c| c.is_alphanumeric() || "._ -".contains(c)) || method.trim().is_empty() {
+        return Err("config: недопустимые символы в имени метода. Используйте только буквы, цифры, точки и пробелы.".into());
+    }
+
     if !std::path::Path::new(&spp_path).exists() {
         return Err(format!("config: файл модели не найден: {}", spp_path));
     }
