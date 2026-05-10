@@ -341,10 +341,11 @@ document.getElementById('btnSave').addEventListener('click', async () => {
 
   let hasError = false;
 
+  // WR-04: val.trim() === '' корректно ловит пустые строки и строки из пробелов
   [[plantSim, 'inputPlantSim', 'errPlantSim'],
    [workDir,  'inputWorkDir',  'errWorkDir'],
    [scripts,  'inputScripts',  'errScripts']].forEach(([val, inputId, errId]) => {
-    if (val && val.trim() === '') {
+    if (val.trim() === '') {
       showError(inputId, errId);
       hasError = true;
     } else {
