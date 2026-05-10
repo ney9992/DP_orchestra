@@ -442,10 +442,12 @@ async fn stop_stage(
     };
 
     if let Some(pid) = pid {
-        // taskkill /F /PID — принудительное завершение на Windows (T-02-03: PID из собственного State)
-        let _ = Command::new("taskkill")
-            .args(["/F", "/PID", &pid.to_string()])
-            .output();
+        // WR-01: не вызывать taskkill с sentinel PID=0 (реальный PID всегда > 0)
+        if pid > 0 {
+            let _ = Command::new("taskkill")
+                .args(["/F", "/PID", &pid.to_string()])
+                .output();
+        }
 
         let _ = app_handle.emit("stage-status", StageStatusPayload {
             stage: stage.clone(),
