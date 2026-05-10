@@ -418,7 +418,7 @@ async fn run_plantsim(
                     line: "[warning] results.txt не найден — результаты недоступны".to_string(),
                 });
             }
-        }
+        } }
 
         { state_arc.lock().unwrap().remove("plantsim"); }
 
