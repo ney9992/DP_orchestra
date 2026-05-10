@@ -91,8 +91,15 @@ None
 
 ## Session Continuity
 
-**Last session:** 2026-05-10 — Phase 3 спланирована: 3 плана (03-00 mock, 03-01 Rust backend, 03-02 Frontend). Все требования INT-01, INT-02, PIPE-04 покрыты.
-**Next action:** `/gsd-execute-phase 3`
+**Last session:** 2026-05-10 — Phase 3 выполнена (PlantSim UI, ярлык, результаты), code review findings CR+WR закрыты. Milestone v1 НЕ закрыт — ждёт реальной работы с данными Plant Simulation.
+
+**Что осталось до закрытия v1:**
+- Отладка реального запуска PlantSim через ярлык на заводском ПК
+- Согласование формата results.txt с SimTalk-макросом (load/throughput/cycle_time)
+- Сквозной тест: запуск → симуляция → числа в UI
+- После успешного сквозного теста — milestone v1 можно закрывать
+
+**Next action:** обсудить Phase 4 — работа с входными/выходными данными Plant Simulation
 
 ---
-*Last updated: 2026-05-10 — Phase 3 planned (3 plans ready to execute)*
+*Last updated: 2026-05-10 — v1 in progress, data I/O work pending*
