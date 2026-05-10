@@ -142,6 +142,45 @@
         <div class="log-body" id="logBody"></div>
       </div>
 
+      <!-- Панель результатов симуляции (Phase 3) — D-10, D-11, D-12 -->
+      <div class="results-panel" id="resultsPanel">
+        <div class="results-header">
+          <span class="results-title">Результаты симуляции</span>
+        </div>
+        <div class="results-body">
+          <div class="metric-card">
+            <div class="metric-info">
+              <div class="metric-label">Загрузка линии</div>
+              <div class="metric-value" id="resLoad">—</div>
+              <div class="metric-unit">%</div>
+            </div>
+            <div class="metric-icon" style="background:#EDF7F0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <div class="metric-label">Пропускная способность</div>
+              <div class="metric-value" id="resThroughput">—</div>
+              <div class="metric-unit">ед./ч</div>
+            </div>
+            <div class="metric-icon" style="background:#EBF4FF">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <div class="metric-label">Время цикла</div>
+              <div class="metric-value" id="resCycleTime">—</div>
+              <div class="metric-unit">сек</div>
+            </div>
+            <div class="metric-icon" style="background:#F5F5F7">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Footer -->
       <div class="divider"></div>
       <div class="footer">
@@ -186,6 +225,26 @@
           <button class="browse-btn" data-target="inputScripts" data-type="folder">…</button>
         </div>
         <div class="field-error" id="errScripts">Путь не найден</div>
+      </div>
+
+      <!-- 4-е поле настроек: PlantSimulation.exe (D-02) -->
+      <div class="field-group">
+        <label class="field-label">Путь к PlantSimulation.exe</label>
+        <div class="field-row">
+          <input class="field-input" id="inputPlantSimExe" type="text" readonly placeholder="Не задан">
+          <button class="browse-btn" data-target="inputPlantSimExe" data-type="file">…</button>
+        </div>
+        <div class="field-error" id="errPlantSimExe">Путь не найден</div>
+      </div>
+
+      <!-- 5-е поле настроек: SimTalk макрос .spm (D-03) -->
+      <div class="field-group">
+        <label class="field-label">Путь к макросу SimTalk (.spm)</label>
+        <div class="field-row">
+          <input class="field-input" id="inputPlantSimMacro" type="text" readonly placeholder="Не задан">
+          <button class="browse-btn" data-target="inputPlantSimMacro" data-type="file">…</button>
+        </div>
+        <div class="field-error" id="errPlantSimMacro">Путь не найден</div>
       </div>
 
       <div class="settings-footer-divider"></div>

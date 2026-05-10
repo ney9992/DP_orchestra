@@ -114,6 +114,12 @@ None — все функции полностью реализованы. Чис
 
 **Task 4 (checkpoint:human-verify)** — НЕ выполнена (smoke-тест с mock-plantsim). Ожидает подтверждения от пользователя.
 
+## Self-Check: PASSED
+
+- Files: index.html FOUND, main.js FOUND, styles.css FOUND
+- Commits: df41db5 FOUND, 4d8af93 FOUND, 1fda099 FOUND
+- All 15 success criteria: PASSED
+
 ---
 *Phase: 03-integraciya-plant-simulation*
 *Completed: 2026-05-10*

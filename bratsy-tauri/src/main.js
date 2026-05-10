@@ -61,10 +61,16 @@ document.querySelectorAll('.stage-card').forEach(card => {
         await invoke('run_stage', { stage });
         lastSyncTime = Date.now();
       } catch (e) {
-        failedAttempts++;
-        console.error('run_stage error:', e);
-        updatePill(stage, 'error');
-        showToast(STAGE_LABELS[stage] || stage, 'error');
+        if (typeof e === 'string' && e.startsWith('config:')) {
+          // D-13: ошибка конфигурации — диалог с кнопкой «Открыть настройки»
+          showConfigError(e.replace('config: ', ''));
+        } else {
+          // D-14: ошибка выполнения — стандартный механизм Phase 2
+          failedAttempts++;
+          console.error('run_stage error:', e);
+          updatePill(stage, 'error');
+          showToast(STAGE_LABELS[stage] || stage, 'error');
+        }
       }
     }
   });
@@ -131,6 +137,16 @@ let logLines = [];
 
 function showLogPanel(visible) {
   const panel = document.getElementById('logPanel');
+  if (visible) {
+    panel.classList.add('visible');
+  } else {
+    panel.classList.remove('visible');
+  }
+}
+
+function showResultsPanel(visible) {
+  const panel = document.getElementById('resultsPanel');
+  if (!panel) return;
   if (visible) {
     panel.classList.add('visible');
   } else {
@@ -206,6 +222,14 @@ function showToast(stageName, type) {
   }, 4000);
 }
 
+function showConfigError(message) {
+  // D-15: confirm() с предложением открыть настройки
+  const goSettings = confirm(
+    `Ошибка конфигурации Plant Simulation:\n${message}\n\nОткрыть настройки?`
+  );
+  if (goSettings) openSettings();
+}
+
 // ── Settings panel ────────────────────────────────────────────────
 const panel    = document.getElementById('settingsPanel');
 const overlay  = document.getElementById('settingsOverlay');
@@ -255,15 +279,19 @@ document.querySelectorAll('.browse-btn').forEach(btn => {
 
 // ── Save settings ─────────────────────────────────────────────
 document.getElementById('btnSave').addEventListener('click', async () => {
-  const plantSim = document.getElementById('inputPlantSim').value;
-  const workDir  = document.getElementById('inputWorkDir').value;
-  const scripts  = document.getElementById('inputScripts').value;
+  const plantSim      = document.getElementById('inputPlantSim').value;
+  const workDir       = document.getElementById('inputWorkDir').value;
+  const scripts       = document.getElementById('inputScripts').value;
+  const plantSimExe   = document.getElementById('inputPlantSimExe').value;
+  const plantSimMacro = document.getElementById('inputPlantSimMacro').value;
 
   let hasError = false;
 
-  [[plantSim, 'inputPlantSim', 'errPlantSim'],
-   [workDir,  'inputWorkDir',  'errWorkDir'],
-   [scripts,  'inputScripts',  'errScripts']].forEach(([val, inputId, errId]) => {
+  [[plantSim,      'inputPlantSim',      'errPlantSim'],
+   [workDir,       'inputWorkDir',       'errWorkDir'],
+   [scripts,       'inputScripts',       'errScripts'],
+   [plantSimExe,   'inputPlantSimExe',   'errPlantSimExe'],
+   [plantSimMacro, 'inputPlantSimMacro', 'errPlantSimMacro']].forEach(([val, inputId, errId]) => {
     if (val && val.trim() === '') {
       showError(inputId, errId);
       hasError = true;
@@ -277,9 +305,11 @@ document.getElementById('btnSave').addEventListener('click', async () => {
   try {
     await invoke('save_settings', {
       settings: {
-        plant_sim_path: plantSim,
-        work_dir: workDir,
-        scripts_dir: scripts,
+        plant_sim_path:  plantSim,
+        work_dir:        workDir,
+        scripts_dir:     scripts,
+        plant_sim_exe:   plantSimExe,
+        plant_sim_macro: plantSimMacro,
       }
     });
     closeSettings();
@@ -326,12 +356,26 @@ window.addEventListener('DOMContentLoaded', async () => {
     appendLog(stage, line);
   });
 
+  // D-12: панель результатов — появляется при получении stage-results
+  await listen('stage-results', (event) => {
+    const { stage, load, throughput, cycle_time } = event.payload;
+    if (stage !== 'plantsim') return;
+
+    document.getElementById('resLoad').textContent = load.toFixed(1);
+    document.getElementById('resThroughput').textContent = throughput.toFixed(0);
+    document.getElementById('resCycleTime').textContent = cycle_time.toFixed(1);
+
+    showResultsPanel(true);
+  });
+
   // Загрузить настройки
   try {
     const s = await invoke('get_settings');
-    if (s.plant_sim_path) document.getElementById('inputPlantSim').value = s.plant_sim_path;
-    if (s.work_dir)       document.getElementById('inputWorkDir').value  = s.work_dir;
-    if (s.scripts_dir)    document.getElementById('inputScripts').value  = s.scripts_dir;
+    if (s.plant_sim_path)  document.getElementById('inputPlantSim').value      = s.plant_sim_path;
+    if (s.work_dir)        document.getElementById('inputWorkDir').value        = s.work_dir;
+    if (s.scripts_dir)     document.getElementById('inputScripts').value        = s.scripts_dir;
+    if (s.plant_sim_exe)   document.getElementById('inputPlantSimExe').value    = s.plant_sim_exe;
+    if (s.plant_sim_macro) document.getElementById('inputPlantSimMacro').value  = s.plant_sim_macro;
   } catch (e) {
     console.warn('Could not load settings:', e);
   }
