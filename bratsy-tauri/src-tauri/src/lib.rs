@@ -363,6 +363,8 @@ pub fn run() {
             save_settings,
             run_stage,
             stop_stage,
+            find_plantsim_shortcut,
+            run_plantsim,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
