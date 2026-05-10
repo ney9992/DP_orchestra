@@ -456,7 +456,20 @@ body {
   font-weight: 500;
   color: #8E8E93;
   letter-spacing: 0.2px;
+  flex: 1;
 }
+
+.log-close {
+  background: none;
+  border: none;
+  color: #636366;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.log-close:hover { color: #AEAEB2; }
 
 .log-body {
   height: 130px;
