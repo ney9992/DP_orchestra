@@ -161,6 +161,167 @@ async fn run_stage(
     Ok(())
 }
 
+/// Ищет .lnk-ярлык Plant Simulation в директории рядом с .exe приложения и в рабочей папке.
+#[tauri::command]
+fn find_plantsim_shortcut() -> Result<String, String> {
+    let mut scan_dirs: Vec<PathBuf> = Vec::new();
+
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            scan_dirs.push(dir.to_path_buf());
+        }
+    }
+    if let Ok(cwd) = std::env::current_dir() {
+        scan_dirs.push(cwd);
+    }
+
+    for dir in &scan_dirs {
+        if let Ok(entries) = std::fs::read_dir(dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if path.extension().and_then(|e| e.to_str()) == Some("lnk") {
+                    let name = path.file_name()
+                        .and_then(|n| n.to_str())
+                        .unwrap_or("")
+                        .to_lowercase();
+                    if name.contains("plant") || name.contains("simulation")
+                        || name.contains("цз") || name.contains("digital")
+                    {
+                        return Ok(path.to_string_lossy().into_owned());
+                    }
+                }
+            }
+        }
+    }
+
+    Err("config: Ярлык Plant Simulation не найден. Создайте ярлык с именем, содержащим «Plant» или «Simulation», рядом с приложением.".into())
+}
+
+/// Модифицирует .lnk-ярлык (путь к модели и метод), запускает Plant Simulation через него,
+/// ждёт завершения, читает results.txt и эмитирует stage-results.
+#[tauri::command]
+async fn run_plantsim(
+    lnk_path: String,
+    spp_path: String,
+    method: String,
+    state: tauri::State<'_, ProcessMap>,
+    app_handle: tauri::AppHandle,
+) -> Result<(), String> {
+    if !std::path::Path::new(&spp_path).exists() {
+        return Err(format!("config: файл модели не найден: {}", spp_path));
+    }
+
+    {
+        let mut map = state.0.lock().unwrap();
+        if map.contains_key("plantsim") {
+            return Err("already running".into());
+        }
+        map.insert("plantsim".to_string(), 0);
+    }
+
+    let _ = app_handle.emit("stage-status", StageStatusPayload {
+        stage: "plantsim".to_string(),
+        status: "running".to_string(),
+    });
+
+    // Модифицируем ярлык через WScript.Shell: прописываем путь к модели и метод
+    let modify_cmd = format!(
+        r#"$s=(New-Object -ComObject WScript.Shell).CreateShortcut("{}");$s.Arguments='-f "{}" /E {}';$s.Save()"#,
+        lnk_path, spp_path, method
+    );
+    if let Err(e) = Command::new("powershell")
+        .args(["-ExecutionPolicy", "Bypass", "-NonInteractive", "-Command", &modify_cmd])
+        .output()
+    {
+        let mut map = state.0.lock().unwrap();
+        map.remove("plantsim");
+        return Err(format!("Ошибка модификации ярлыка: {}", e));
+    }
+
+    for line in [
+        format!("Запуск Plant Simulation: {}", spp_path),
+        format!("Метод: {}", method),
+        "Ожидание завершения симуляции...".to_string(),
+    ] {
+        let _ = app_handle.emit("stage-log", StageLogPayload {
+            stage: "plantsim".to_string(),
+            line,
+        });
+    }
+
+    // Запускаем через ярлык и ждём закрытия Plant Simulation
+    let wait_cmd = format!(
+        "Start-Process -FilePath '{}' -Wait",
+        lnk_path.replace('\'', "''")
+    );
+    let mut child = Command::new("powershell")
+        .args(["-ExecutionPolicy", "Bypass", "-NonInteractive", "-Command", &wait_cmd])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|e| {
+            let mut map = state.0.lock().unwrap();
+            map.remove("plantsim");
+            e.to_string()
+        })?;
+
+    {
+        let mut map = state.0.lock().unwrap();
+        map.insert("plantsim".to_string(), child.id());
+    }
+
+    let work_dir = get_settings().work_dir.clone();
+    let app_clone = app_handle.clone();
+    let state_arc = state.0.clone();
+
+    tauri::async_runtime::spawn_blocking(move || {
+        let status_ok = match child.wait() {
+            Ok(s) => s.success(),
+            Err(_) => false,
+        };
+
+        let results_path = std::path::Path::new(&work_dir).join("results.txt");
+        match std::fs::read_to_string(&results_path) {
+            Ok(content) => {
+                let mut load = 0f32;
+                let mut throughput = 0f32;
+                let mut cycle_time = 0f32;
+                for line in content.lines() {
+                    if let Some((k, v)) = line.split_once('=') {
+                        match k.trim() {
+                            "load"        => load        = v.trim().parse().unwrap_or(0.0),
+                            "throughput"  => throughput  = v.trim().parse().unwrap_or(0.0),
+                            "cycle_time"  => cycle_time  = v.trim().parse().unwrap_or(0.0),
+                            _ => {}
+                        }
+                    }
+                }
+                let _ = app_clone.emit("stage-results", StageResultsPayload {
+                    stage: "plantsim".into(),
+                    load,
+                    throughput,
+                    cycle_time,
+                });
+            }
+            Err(_) => {
+                let _ = app_clone.emit("stage-log", StageLogPayload {
+                    stage: "plantsim".to_string(),
+                    line: "[warning] results.txt не найден — результаты недоступны".to_string(),
+                });
+            }
+        }
+
+        { state_arc.lock().unwrap().remove("plantsim"); }
+
+        let _ = app_clone.emit("stage-status", StageStatusPayload {
+            stage: "plantsim".to_string(),
+            status: if status_ok { "done" } else { "error" }.to_string(),
+        });
+    });
+
+    Ok(())
+}
+
 #[tauri::command]
 async fn stop_stage(
     stage: String,
