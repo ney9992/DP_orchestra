@@ -310,7 +310,7 @@ gearBtn.addEventListener('click', () => {
 overlay.addEventListener('click', closeSettings);
 document.getElementById('btnCancel').addEventListener('click', closeSettings);
 
-// ── Browse dialogs (via Tauri dialog plugin or fallback) ──────
+// ── Browse dialogs (нативный Windows диалог через Rust) ──────
 document.querySelectorAll('.browse-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     const targetId = btn.dataset.target;
@@ -318,18 +318,28 @@ document.querySelectorAll('.browse-btn').forEach(btn => {
     const input    = document.getElementById(targetId);
 
     try {
-      const { open } = await import('https://cdn.jsdelivr.net/npm/@tauri-apps/plugin-dialog@2/index.js').catch(() => ({ open: null }));
-
-      if (open) {
-        const selected = await open({ directory: type === 'folder', multiple: false });
-        if (selected) { input.value = selected; clearError(targetId); }
+      let selected;
+      if (type === 'folder') {
+        selected = await invoke('pick_folder', {
+          title: 'Выберите папку',
+          defaultPath: input.value || '',
+        });
       } else {
-        const val = prompt(type === 'file' ? 'Введите путь к файлу .spp:' : 'Введите путь к папке:');
-        if (val) { input.value = val; clearError(targetId); }
+        // Определяем фильтр по полю
+        const filter = targetId === 'inputPlantSimShortcut'
+          ? 'Ярлык Plant Simulation (*.lnk)|*.lnk|Все файлы (*.*)|*.*'
+          : targetId === 'inputPlantSim'
+            ? 'Plant Simulation Model (*.spp)|*.spp|Все файлы (*.*)|*.*'
+            : 'Все файлы (*.*)|*.*';
+        selected = await invoke('pick_file', {
+          title: 'Выберите файл',
+          filter,
+          defaultPath: input.value || '',
+        });
       }
-    } catch {
-      const val = prompt(type === 'file' ? 'Введите путь к файлу .spp:' : 'Введите путь к папке:');
-      if (val) { input.value = val; clearError(targetId); }
+      if (selected) { input.value = selected; clearError(targetId); }
+    } catch (e) {
+      console.error('pick dialog error:', e);
     }
   });
 });
