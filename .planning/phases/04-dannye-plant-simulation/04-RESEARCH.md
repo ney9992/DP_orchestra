@@ -89,9 +89,7 @@ run_plantsim (lib.rs):
 - Для русских имён в значениях: использовать `UTF-8`
 - Для ASCII-значений (числа с точкой): `ANSI` или `UTF-8` — без разницы
 
-**Критическое ограничение безопасности:** [CITED: docs.plm.automation.siemens.com/content/plant_sim_help/15/.../prohibit_access_to_the_computer_model_settings.html]
-- Если в модели включена опция "Prohibit access to the computer" → `FileInterface` может писать ТОЛЬКО в папку модели, `write` возвращает false при попытке писать в другое место
-- Настройка: File → Model Settings → General → Security → снять галочку "Prohibit access to the computer"
+~~**Критическое ограничение безопасности:**~~ ~~СНЯТО~~ — пользователь подтвердил, что "Prohibit access to the computer" **выключена по умолчанию** в используемой конфигурации. Не является риском для данного проекта.
 - Это **первый кандидат на причину** если results.txt не создаётся
 
 ### Шаблон SimTalk-метода для записи results.txt
