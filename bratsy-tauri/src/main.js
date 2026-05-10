@@ -413,11 +413,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Загрузить настройки
   try {
     const s = await invoke('get_settings');
-    if (s.plant_sim_path)  document.getElementById('inputPlantSim').value      = s.plant_sim_path;
-    if (s.work_dir)        document.getElementById('inputWorkDir').value        = s.work_dir;
-    if (s.scripts_dir)     document.getElementById('inputScripts').value        = s.scripts_dir;
-    if (s.plant_sim_exe)   document.getElementById('inputPlantSimExe').value    = s.plant_sim_exe;
-    if (s.plant_sim_macro) document.getElementById('inputPlantSimMacro').value  = s.plant_sim_macro;
+    if (s.plant_sim_path) document.getElementById('inputPlantSim').value = s.plant_sim_path;
+    if (s.work_dir)       document.getElementById('inputWorkDir').value  = s.work_dir;
+    if (s.scripts_dir)    document.getElementById('inputScripts').value  = s.scripts_dir;
   } catch (e) {
     console.warn('Could not load settings:', e);
   }
