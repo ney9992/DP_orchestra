@@ -162,18 +162,39 @@ async fn run_stage(
     Ok(())
 }
 
-/// Ищет .lnk-ярлык Plant Simulation в директории рядом с .exe приложения и в рабочей папке.
+/// Возвращает путь к .lnk-ярлыку Plant Simulation.
+/// Порядок: 1) из настроек, 2) автопоиск по нескольким директориям.
 #[tauri::command]
 fn find_plantsim_shortcut() -> Result<String, String> {
+    // 1. Проверить сохранённый путь в настройках
+    let saved = get_settings().plant_sim_shortcut;
+    if !saved.is_empty() && std::path::Path::new(&saved).exists() {
+        return Ok(saved);
+    }
+
+    // 2. Автопоиск — сканируем несколько вероятных директорий
     let mut scan_dirs: Vec<PathBuf> = Vec::new();
 
+    if let Ok(cwd) = std::env::current_dir() {
+        scan_dirs.push(cwd.clone());
+        // родительская папка (полезно если cwd = bratsy-tauri/src-tauri)
+        if let Some(parent) = cwd.parent() {
+            scan_dirs.push(parent.to_path_buf());
+            if let Some(gp) = parent.parent() {
+                scan_dirs.push(gp.to_path_buf());
+            }
+        }
+    }
     if let Ok(exe) = std::env::current_exe() {
         if let Some(dir) = exe.parent() {
             scan_dirs.push(dir.to_path_buf());
+            // debug target/debug → поднимаемся до workspace root
+            for _ in 0..4 {
+                if let Some(p) = scan_dirs.last().cloned().and_then(|d| d.parent().map(|x| x.to_path_buf())) {
+                    scan_dirs.push(p);
+                }
+            }
         }
-    }
-    if let Ok(cwd) = std::env::current_dir() {
-        scan_dirs.push(cwd);
     }
 
     for dir in &scan_dirs {
@@ -181,21 +202,13 @@ fn find_plantsim_shortcut() -> Result<String, String> {
             for entry in entries.flatten() {
                 let path = entry.path();
                 if path.extension().and_then(|e| e.to_str()) == Some("lnk") {
-                    let name = path.file_name()
-                        .and_then(|n| n.to_str())
-                        .unwrap_or("")
-                        .to_lowercase();
-                    if name.contains("plant") || name.contains("simulation")
-                        || name.contains("цз") || name.contains("digital")
-                    {
-                        return Ok(path.to_string_lossy().into_owned());
-                    }
+                    return Ok(path.to_string_lossy().into_owned());
                 }
             }
         }
     }
 
-    Err("config: Ярлык Plant Simulation не найден. Создайте ярлык с именем, содержащим «Plant» или «Simulation», рядом с приложением.".into())
+    Err("config: Ярлык Plant Simulation не найден. Укажите путь к ярлыку в настройках приложения.".into())
 }
 
 /// Модифицирует .lnk-ярлык (путь к модели и метод), запускает Plant Simulation через него,
