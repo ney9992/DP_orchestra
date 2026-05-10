@@ -40,19 +40,73 @@ const STAGE_LABELS = {
   report:   'Report',
 };
 
+// ── Plant Simulation: диалоговый запуск через .lnk-ярлык ─────────
+async function runPlantSim() {
+  totalAttempts++;
+  clearLog();
+  setLogTitle(STAGE_LABELS.plantsim);
+  showLogPanel(true);
+
+  try {
+    // Шаг 1: найти ярлык
+    const lnkPath = await invoke('find_plantsim_shortcut');
+
+    // Шаг 2: выбрать .spp файл модели
+    let sppPath;
+    try {
+      const { open } = await import('https://cdn.jsdelivr.net/npm/@tauri-apps/plugin-dialog@2/index.js');
+      const saved = await invoke('get_settings').catch(() => ({}));
+      sppPath = await open({
+        filters: [{ name: 'Plant Simulation Model', extensions: ['spp'] }],
+        defaultPath: saved.plant_sim_path || undefined,
+        title: 'Выберите модель Plant Simulation (.spp)',
+        multiple: false,
+      });
+    } catch {
+      const saved = await invoke('get_settings').catch(() => ({}));
+      sppPath = prompt('Путь к файлу модели Plant Simulation (.spp):', saved.plant_sim_path || '');
+    }
+    if (!sppPath) return;
+
+    // Сохранить выбранный путь в настройках
+    try {
+      const s = await invoke('get_settings');
+      await invoke('save_settings', { settings: { ...s, plant_sim_path: sppPath } });
+    } catch { /* некритично */ }
+
+    // Шаг 3: ввести метод SimTalk
+    const method = prompt(
+      'Введите метод SimTalk для запуска:\n(например: .UserObjects.printed)',
+      '.UserObjects.printed'
+    );
+    if (!method || !method.trim()) return;
+
+    // Шаг 4: запустить
+    await invoke('run_plantsim', { lnkPath, sppPath, method: method.trim() });
+    lastSyncTime = Date.now();
+
+  } catch (e) {
+    if (typeof e === 'string' && e.startsWith('config:')) {
+      showConfigError(e.replace('config: ', ''));
+    } else {
+      failedAttempts++;
+      console.error('run_plantsim error:', e);
+      updatePill('plantsim', 'error');
+      showToast(STAGE_LABELS.plantsim, 'error');
+    }
+  }
+}
+
 document.querySelectorAll('.stage-card').forEach(card => {
   card.addEventListener('click', async () => {
     const stage = card.dataset.stage;
 
     if (activeStages.has(stage)) {
-      // Повторный клик — остановить
-      try {
-        await invoke('stop_stage', { stage });
-      } catch (e) {
-        console.error('stop_stage error:', e);
-      }
+      try { await invoke('stop_stage', { stage }); }
+      catch (e) { console.error('stop_stage error:', e); }
+    } else if (stage === 'plantsim') {
+      await runPlantSim();
     } else {
-      // Первый клик — запустить
       totalAttempts++;
       clearLog();
       setLogTitle(STAGE_LABELS[stage] || stage);
@@ -61,16 +115,10 @@ document.querySelectorAll('.stage-card').forEach(card => {
         await invoke('run_stage', { stage });
         lastSyncTime = Date.now();
       } catch (e) {
-        if (typeof e === 'string' && e.startsWith('config:')) {
-          // D-13: ошибка конфигурации — диалог с кнопкой «Открыть настройки»
-          showConfigError(e.replace('config: ', ''));
-        } else {
-          // D-14: ошибка выполнения — стандартный механизм Phase 2
-          failedAttempts++;
-          console.error('run_stage error:', e);
-          updatePill(stage, 'error');
-          showToast(STAGE_LABELS[stage] || stage, 'error');
-        }
+        failedAttempts++;
+        console.error('run_stage error:', e);
+        updatePill(stage, 'error');
+        showToast(STAGE_LABELS[stage] || stage, 'error');
       }
     }
   });
