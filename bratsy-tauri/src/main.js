@@ -58,7 +58,7 @@ async function runPlantSim() {
         await invoke('save_settings', { settings: { ...s, plant_sim_shortcut: lnkPath } });
         document.getElementById('inputPlantSimShortcut').value = lnkPath;
       }
-    } catch { /* некритично */ }
+    } catch (e) { console.warn('Shortcut save skipped:', e); }
 
     // Шаг 2: выбрать .spp файл модели через нативный Windows-диалог
     const saved = await invoke('get_settings').catch(() => ({}));
@@ -73,7 +73,7 @@ async function runPlantSim() {
     try {
       const s = await invoke('get_settings');
       await invoke('save_settings', { settings: { ...s, plant_sim_path: sppPath } });
-    } catch { /* некритично */ }
+    } catch (e) { console.warn('Path save skipped:', e); }
 
     // Шаг 3: ввести метод SimTalk
     const method = prompt(
