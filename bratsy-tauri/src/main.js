@@ -377,9 +377,9 @@ function showError(inputId, errId) {
 function clearError(inputId) {
   const row = document.getElementById(inputId)?.closest('.field-row');
   if (row) row.classList.remove('error');
-  document.querySelectorAll('.field-error').forEach(el => {
-    if (el.id === 'err' + inputId.replace('input', '')) el.classList.remove('visible');
-  });
+  // WR-05: убираем суффикс 'input' только с начала строки
+  const errId = 'err' + inputId.replace(/^input/, '');
+  document.getElementById(errId)?.classList.remove('visible');
 }
 
 // ── Run full pipeline — заглушка до Phase 3 ───────────────────────
