@@ -61,9 +61,9 @@ Plans:
 4. Если PlantSim не найден или файл .spp не существует, пользователь получает понятное сообщение об ошибке (не падение приложения)
 **Plans:** 3 plans
 Plans:
-- [ ] 03-00-PLAN.md — Wave 0: mock-plantsim.ps1 (PowerShell-заглушка PlantSim для разработки)
-- [ ] 03-01-PLAN.md — Rust backend: Settings расширение, StageResultsPayload, run_stage plantsim-ветка, results.txt parsing, stage-results event
-- [ ] 03-02-PLAN.md — Frontend: 2 поля настроек (exe+spm), панель результатов (3 карточки), listen stage-results, showConfigError, CSS transition
+- [x] 03-00-PLAN.md — Wave 0: mock-plantsim.ps1 (PowerShell-заглушка PlantSim для разработки)
+- [x] 03-01-PLAN.md — Rust backend: find_plantsim_shortcut, run_plantsim, results.txt parsing, stage-results event
+- [x] 03-02-PLAN.md — Frontend: панель результатов (3 карточки), listen stage-results, showConfigError, нативный file picker
 **UI hint:** yes
 
 ## Progress Table
