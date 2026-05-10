@@ -327,9 +327,10 @@ document.querySelectorAll('.browse-btn').forEach(btn => {
 
 // ── Save settings ─────────────────────────────────────────────
 document.getElementById('btnSave').addEventListener('click', async () => {
-  const plantSim = document.getElementById('inputPlantSim').value;
-  const workDir  = document.getElementById('inputWorkDir').value;
-  const scripts  = document.getElementById('inputScripts').value;
+  const plantSimShortcut = document.getElementById('inputPlantSimShortcut').value;
+  const plantSim         = document.getElementById('inputPlantSim').value;
+  const workDir          = document.getElementById('inputWorkDir').value;
+  const scripts          = document.getElementById('inputScripts').value;
 
   let hasError = false;
 
@@ -349,9 +350,10 @@ document.getElementById('btnSave').addEventListener('click', async () => {
   try {
     await invoke('save_settings', {
       settings: {
-        plant_sim_path: plantSim,
-        work_dir:       workDir,
-        scripts_dir:    scripts,
+        plant_sim_shortcut: plantSimShortcut,
+        plant_sim_path:     plantSim,
+        work_dir:           workDir,
+        scripts_dir:        scripts,
       }
     });
     closeSettings();
