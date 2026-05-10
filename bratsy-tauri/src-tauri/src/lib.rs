@@ -314,10 +314,14 @@ async fn run_plantsim(
         status: "running".to_string(),
     });
 
+    // CR-01: экранируем кавычки в путях перед вставкой в PS-строку
+    let lnk_escaped = lnk_path.replace('"', "`\"");
+    let spp_escaped = spp_path.replace('"', "`\"");
+
     // Модифицируем ярлык через WScript.Shell: прописываем путь к модели и метод
     let modify_cmd = format!(
         r#"$s=(New-Object -ComObject WScript.Shell).CreateShortcut("{}");$s.Arguments='-f "{}" /E {}';$s.Save()"#,
-        lnk_path, spp_path, method
+        lnk_escaped, spp_escaped, method
     );
     if let Err(e) = Command::new("powershell")
         .args(["-ExecutionPolicy", "Bypass", "-NonInteractive", "-Command", &modify_cmd])
