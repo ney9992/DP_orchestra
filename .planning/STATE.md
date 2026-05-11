@@ -91,16 +91,11 @@ None
 
 ## Session Continuity
 
-**Last session:** 2026-05-10 — Phase 3 выполнена + CR/WR fixes. Phase 4 research готов. Пауза.
+**Last session:** 2026-05-11 — сессия возобновлена. Phase 4 research готов (04-RESEARCH.md).
 
-**Что осталось до закрытия v1 (Phase 4):**
-- Тест Start-Process -Wait с .lnk на реальном заводском ПК
-- Тест CLI-синтаксиса (-f, /E) с реальным PlantSim
-- Тест чтения results.txt от реального SimTalk-макроса
-- Скорректировать run_plantsim если что-то не так
-- Сквозной тест: кнопка → PlantSim → числа в UI → milestone v1 закрыт
+**Текущий фокус:** Phase 4 — планирование и сквозной тест на реальном PlantSim.
 
-**Next action:** `/gsd-resume-work` — вернуться и запланировать Phase 4
+**Next action:** `/gsd-plan-phase 4` — RESEARCH.md уже есть, переходим к плану
 
 ---
-*Last updated: 2026-05-10 — сессия завершена, ждём тест на реальном PlantSim*
+*Last updated: 2026-05-11 — resume-work, переход к планированию Phase 4*
