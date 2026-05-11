@@ -43,6 +43,50 @@ pub struct StageResultsPayload {
     pub cycle_time: f32,
 }
 
+// ── Vault PDM types ──────────────────────────────────────────────
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct VaultProperty {
+    #[serde(rename = "SysName")]  pub sys_name: String,
+    #[serde(rename = "DispName")] pub disp_name: String,
+    #[serde(rename = "Val")]      pub val: serde_json::Value,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct VaultFile {
+    #[serde(rename = "FileName")]    pub file_name: String,
+    #[serde(rename = "Id")]          pub id: i64,
+    #[serde(rename = "MasterId")]    pub master_id: i64,
+    #[serde(rename = "VerNum")]      pub ver_num: i32,
+    #[serde(rename = "LastModDate")] pub last_mod_date: String,
+    #[serde(rename = "LinkType")]    pub link_type: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct VaultItem {
+    #[serde(rename = "ParentId")]     pub parent_id: Option<i64>,
+    #[serde(rename = "Id")]           pub id: i64,
+    #[serde(rename = "MasterId")]     pub master_id: i64,
+    #[serde(rename = "Title")]        pub title: String,
+    #[serde(rename = "Detail")]       pub detail: Option<String>,
+    #[serde(rename = "PartNumber")]   pub part_number: String,
+    #[serde(rename = "RevNum")]       pub rev_num: Option<String>,
+    #[serde(rename = "VerNum")]       pub ver_num: Option<i32>,
+    #[serde(rename = "CatName")]      pub cat_name: Option<String>,
+    #[serde(rename = "Quant")]        pub quant: Option<f64>,
+    #[serde(rename = "PositionNum")]  pub position_num: Option<i32>,
+    #[serde(rename = "Units")]        pub units: Option<String>,
+    #[serde(rename = "LfCycStateId")] pub lf_cyc_state_id: Option<i32>,
+    #[serde(rename = "Properties")]   pub properties: Vec<VaultProperty>,
+    #[serde(rename = "Files")]        pub files: Vec<VaultFile>,
+}
+
+#[derive(Serialize, Clone)]
+pub struct VaultBomPayload {
+    pub part_number: String,
+    pub items: Vec<VaultItem>,
+}
+
 fn settings_path() -> PathBuf {
     std::env::current_exe()
         .ok()
