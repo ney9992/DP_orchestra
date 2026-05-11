@@ -116,8 +116,8 @@ async fn run_stage(
     state: tauri::State<'_, ProcessMap>,
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
-    // T-02-01: allowlist — plantsim использует отдельную команду run_plantsim
-    let allowed = ["autocad", "pdm", "excel", "report"];
+    // T-02-01: allowlist — pdm и plantsim используют отдельные команды
+    let allowed = ["autocad", "excel", "report"];
     if !allowed.contains(&stage.as_str()) {
         return Err("invalid stage".into());
     }
