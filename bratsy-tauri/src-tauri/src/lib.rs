@@ -308,40 +308,25 @@ fn app_dir() -> PathBuf {
 }
 
 /// Возвращает путь к .lnk-ярлыку Plant Simulation.
-/// Ярлык поставляется вместе с приложением и лежит рядом с exe.
-/// Порядок поиска: 1) настройки, 2) рядом с exe (продакшн), 3) рядом с cwd (dev).
+/// Ярлык встроен в бинарник и извлекается рядом с exe автоматически.
+/// Ручное переопределение через настройки всегда имеет приоритет.
 #[tauri::command]
 fn find_plantsim_shortcut() -> Result<String, String> {
-    const LNK_NAME: &str = "DP_Plant_Simulation.exe.lnk";
-
-    // 1. Сохранённый путь в настройках (ручная переопределение)
+    // 1. Ручное переопределение в настройках
     let saved = get_settings().plant_sim_shortcut;
     if !saved.is_empty() && std::path::Path::new(&saved).exists() {
         return Ok(saved);
     }
 
-    // 2. Рядом с exe — сюда Tauri копирует bundle.resources при установке
-    let next_to_exe = app_dir().join(LNK_NAME);
-    if next_to_exe.exists() {
-        return Ok(next_to_exe.to_string_lossy().into_owned());
-    }
-
-    // 3. Рядом с cwd и его родителем — для режима разработки (cargo tauri dev)
-    if let Ok(cwd) = std::env::current_dir() {
-        let candidates = [
-            cwd.join(LNK_NAME),
-            cwd.parent().map(|p| p.join(LNK_NAME)).unwrap_or_default(),
-        ];
-        for path in &candidates {
-            if path.exists() {
-                return Ok(path.to_string_lossy().into_owned());
-            }
-        }
+    // 2. Извлечь из бинарника рядом с exe (продакшн и dev)
+    let lnk = ensure_lnk();
+    if lnk.exists() {
+        return Ok(lnk.to_string_lossy().into_owned());
     }
 
     Err(format!(
-        "config: Файл ярлыка {} не найден рядом с приложением. \
-         Укажите путь к нему вручную в настройках.",
+        "config: Не удалось создать файл ярлыка {}. \
+         Укажите путь вручную в настройках.",
         LNK_NAME
     ))
 }
