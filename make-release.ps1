@@ -33,9 +33,6 @@ if (-not $setupFile) {
 # Remove old installers to keep the folder clean
 Get-ChildItem $bundleDir -Filter "*-setup.exe" | Where-Object { $_.Name -notlike "*${version}*" } | Remove-Item -Force
 
-$conf    = Get-Content ".\src-tauri\tauri.conf.json" | ConvertFrom-Json
-$version = $conf.version
-
 # ── 3. Assemble release folder ───────────────────────────────────
 $releaseDir = "$PSScriptRoot\release"
 $folderName = "Digital Factory v$version"
