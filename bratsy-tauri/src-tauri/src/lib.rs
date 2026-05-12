@@ -430,8 +430,8 @@ async fn run_plantsim(
         map.insert("plantsim".to_string(), child.id());
     }
 
-    // results.txt всегда рядом с exe приложения — предсказуемое место на любой машине
-    let lnk_dir = app_dir();
+    // results.txt в той же записываемой директории, что и .lnk
+    let lnk_dir = writable_dir();
 
     let app_clone = app_handle.clone();
     let state_arc = state.0.clone();
