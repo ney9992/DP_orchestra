@@ -357,22 +357,15 @@ fn ensure_lnk() -> Result<PathBuf, String> {
     create_lnk(&dir)
 }
 
-/// Возвращает путь к ярлыку Plant Simulation.
-/// При первом запуске создаёт ярлык автоматически.
-/// Ручное переопределение через настройки имеет приоритет.
+/// Возвращает путь к ярлыку Plant Simulation из настроек.
+/// Если не задан — просит пользователя указать его в настройках.
 #[tauri::command]
 fn find_plantsim_shortcut() -> Result<String, String> {
     let saved = get_settings().plant_sim_shortcut;
     if !saved.is_empty() && std::path::Path::new(&saved).exists() {
         return Ok(saved);
     }
-
-    ensure_lnk()
-        .map(|p| p.to_string_lossy().into_owned())
-        .map_err(|e| format!(
-            "config: Не удалось создать ярлык Plant Simulation.\n\nПричина: {}\n\nЕсли Plant Simulation установлен в нестандартную папку, укажите путь к ярлыку вручную в настройках.",
-            e
-        ))
+    Err("config: Путь к ярлыку Plant Simulation не задан. Откройте Настройки (шестерёнка) и укажите путь к файлу .lnk.".into())
 }
 
 /// Модифицирует .lnk-ярлык (путь к модели и метод), запускает Plant Simulation через него,
