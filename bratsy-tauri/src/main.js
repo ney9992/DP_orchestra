@@ -323,7 +323,17 @@ document.getElementById('logClose')?.addEventListener('click', () => showLogPane
 function showResultsPanel(visible) {
   const panel = document.getElementById('simMetrics');
   if (!panel) return;
-  panel.classList.toggle('sim-metrics-visible', visible);
+  if (visible) {
+    panel.style.maxHeight  = '160px';
+    panel.style.opacity    = '1';
+    panel.style.paddingBottom = '16px';
+    panel.style.borderTopColor = 'var(--border)';
+  } else {
+    panel.style.maxHeight  = '0';
+    panel.style.opacity    = '0';
+    panel.style.paddingBottom = '0';
+    panel.style.borderTopColor = 'transparent';
+  }
 }
 
 function setLogTitle(stageName) {
