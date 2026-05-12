@@ -39,7 +39,7 @@ function onStageCompleted(stage) {
     if (importDone.size === IMPORT_STAGES.size) activateSimStep();
   } else if (SIM_STAGES.has(stage)) {
     simDone.add(stage);
-    document.getElementById('tagSim').textContent = `${simDone.size} / 2 выполнено`;
+    document.getElementById('tagSim').textContent = `${simDone.size} / 1 выполнено`;
     if (simDone.size === SIM_STAGES.size) activateReportStep();
   }
 }
