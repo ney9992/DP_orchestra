@@ -457,11 +457,8 @@ async fn run_plantsim(
         map.insert("plantsim".to_string(), child.id());
     }
 
-    // results.txt лежит рядом с .lnk-ярлыком
-    let lnk_dir = std::path::Path::new(&lnk_path)
-        .parent()
-        .map(|p| p.to_path_buf())
-        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    // results.txt всегда рядом с exe приложения — предсказуемое место на любой машине
+    let lnk_dir = app_dir();
 
     let app_clone = app_handle.clone();
     let state_arc = state.0.clone();
