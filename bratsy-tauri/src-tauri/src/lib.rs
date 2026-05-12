@@ -429,7 +429,12 @@ async fn run_plantsim(
         map.insert("plantsim".to_string(), child.id());
     }
 
-    let work_dir = get_settings().work_dir.clone();
+    // results.txt лежит рядом с .lnk-ярлыком
+    let lnk_dir = std::path::Path::new(&lnk_path)
+        .parent()
+        .map(|p| p.to_path_buf())
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+
     let app_clone = app_handle.clone();
     let state_arc = state.0.clone();
 
@@ -440,7 +445,7 @@ async fn run_plantsim(
         };
 
         // WR-03: читаем results.txt только при успешном завершении
-        let results_path = std::path::Path::new(&work_dir).join("results.txt");
+        let results_path = lnk_dir.join("results.txt");
         if status_ok { match std::fs::read_to_string(&results_path) {
             Ok(content) => {
                 let mut load       = 0f32;
