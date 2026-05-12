@@ -33,12 +33,12 @@
       "icons/icon.ico"
     ],
     "windows": {
-      "webviewInstallMode": { "type": "downloadBootstrapper" }
-    },
-    "nsis": {
-      "displayLanguageSelector": false,
-      "languages": ["Russian"],
-      "installMode": "perMachine"
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
+      "nsis": {
+        "displayLanguageSelector": false,
+        "languages": ["Russian"],
+        "installMode": "perMachine"
+      }
     }
   }
 }
