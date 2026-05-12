@@ -443,24 +443,30 @@ async fn run_plantsim(
         let results_path = std::path::Path::new(&work_dir).join("results.txt");
         if status_ok { match std::fs::read_to_string(&results_path) {
             Ok(content) => {
-                let mut load = 0f32;
+                let mut load       = 0f32;
                 let mut throughput = 0f32;
                 let mut cycle_time = 0f32;
+                let mut oee        = 0f32;
+                let mut wip        = 0f32;
+                let mut lead_time  = 0f32;
+                let mut bottleneck = String::new();
                 for line in content.lines() {
                     if let Some((k, v)) = line.split_once('=') {
                         match k.trim() {
                             "load"        => load        = v.trim().parse().unwrap_or(0.0),
                             "throughput"  => throughput  = v.trim().parse().unwrap_or(0.0),
                             "cycle_time"  => cycle_time  = v.trim().parse().unwrap_or(0.0),
+                            "oee"         => oee         = v.trim().parse().unwrap_or(0.0),
+                            "wip"         => wip         = v.trim().parse().unwrap_or(0.0),
+                            "lead_time"   => lead_time   = v.trim().parse().unwrap_or(0.0),
+                            "bottleneck"  => bottleneck  = v.trim().to_string(),
                             _ => {}
                         }
                     }
                 }
                 let _ = app_clone.emit("stage-results", StageResultsPayload {
                     stage: "plantsim".into(),
-                    load,
-                    throughput,
-                    cycle_time,
+                    load, throughput, cycle_time, oee, wip, lead_time, bottleneck,
                 });
             }
             Err(_) => {
