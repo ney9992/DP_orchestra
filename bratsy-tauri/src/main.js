@@ -62,6 +62,9 @@ function activateSimStep() {
   document.getElementById('tagSim').textContent = '0 / 2 выполнено';
   document.getElementById('tagSim').classList.remove('step-tag-locked');
 
+  // Переключить лог на шаг 2
+  activeLogId = 2;
+
   document.getElementById('footerInfo').textContent = 'Шаг 2 из 3 — симуляция производства';
   showToast('Импорт завершён', 'done');
 }
