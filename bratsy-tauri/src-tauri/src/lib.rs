@@ -229,6 +229,7 @@ fn pick_file(title: String, filter: String, default_path: String) -> Option<Stri
 
     let script = format!(
         r#"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 Add-Type -AssemblyName System.Windows.Forms
 $d = New-Object System.Windows.Forms.OpenFileDialog
 $d.Title = '{title}'
