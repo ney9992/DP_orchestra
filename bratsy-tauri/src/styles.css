@@ -160,15 +160,39 @@ body {
 .step-tag-locked { color: var(--gray); background: var(--border); }
 .step-tag-done   { color: var(--green); background: var(--green-light); }
 
-/* ── Step body ── */
+/* ── Step body (аккордеон) ── */
 .step-body {
+  overflow: hidden;
+  max-height: 900px;           /* достаточно для любого контента */
   padding: 0 20px 20px;
-  transition: max-height 0.4s ease, padding 0.3s ease;
+  transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              padding    0.35s ease,
+              opacity    0.3s ease;
+  opacity: 1;
+}
+
+/* Locked и Done — сворачиваются до нуля */
+.step-locked .step-body,
+.step-done   .step-body {
+  max-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  opacity: 0;
 }
 
 .step-cards {
   display: flex;
   gap: 14px;
+}
+
+/* Панели (лог, BOM) внутри step-body — без внешних отступов */
+.step-body .log-panel,
+.step-body .bom-panel {
+  margin: 12px 0 0;
+}
+.step-body .log-panel.visible,
+.step-body .bom-panel.visible {
+  margin-bottom: 0;
 }
 
 /* ── Stage cards (внутри шагов) ── */
