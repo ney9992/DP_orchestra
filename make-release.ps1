@@ -22,11 +22,16 @@ if ($LASTEXITCODE -ne 0) {
 
 # ── 3. Find installer ────────────────────────────────────────────
 $bundleDir = ".\src-tauri\target\release\bundle\nsis"
-$setupFile = Get-ChildItem $bundleDir -Filter "*-setup.exe" | Select-Object -First 1
+$conf    = Get-Content ".\src-tauri\tauri.conf.json" | ConvertFrom-Json
+$version = $conf.version
+# Filter by version to avoid picking up old installers
+$setupFile = Get-ChildItem $bundleDir -Filter "*${version}*-setup.exe" | Select-Object -First 1
 if (-not $setupFile) {
-    Write-Host "Installer not found in $bundleDir" -ForegroundColor Red
+    Write-Host "Installer for v$version not found in $bundleDir" -ForegroundColor Red
     exit 1
 }
+# Remove old installers to keep the folder clean
+Get-ChildItem $bundleDir -Filter "*-setup.exe" | Where-Object { $_.Name -notlike "*${version}*" } | Remove-Item -Force
 
 $conf    = Get-Content ".\src-tauri\tauri.conf.json" | ConvertFrom-Json
 $version = $conf.version
