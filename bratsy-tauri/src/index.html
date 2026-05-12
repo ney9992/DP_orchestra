@@ -143,11 +143,13 @@
         <div class="log-body" id="logBody"></div>
       </div>
 
-      <!-- Панель результатов симуляции (Phase 3) — D-10, D-11, D-12 -->
+      <!-- Панель результатов симуляции -->
       <div class="results-panel" id="resultsPanel">
         <div class="results-header">
           <span class="results-title">Результаты симуляции</span>
         </div>
+
+        <!-- Строка 1: производительность -->
         <div class="results-body">
           <div class="metric-card">
             <div class="metric-info">
@@ -166,7 +168,7 @@
               <div class="metric-unit">ед./ч</div>
             </div>
             <div class="metric-icon" style="background:#EBF4FF">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             </div>
           </div>
           <div class="metric-card">
@@ -177,6 +179,49 @@
             </div>
             <div class="metric-icon" style="background:#F5F5F7">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <div class="metric-label">OEE</div>
+              <div class="metric-value" id="resOee">—</div>
+              <div class="metric-unit">%</div>
+            </div>
+            <div class="metric-icon" style="background:#FFF4E5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C07000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><circle cx="18" cy="6" r="3" fill="#C07000" stroke="none"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Строка 2: поток и узкое место -->
+        <div class="results-body results-body-sm">
+          <div class="metric-card">
+            <div class="metric-info">
+              <div class="metric-label">WIP (незавершёнка)</div>
+              <div class="metric-value" id="resWip">—</div>
+              <div class="metric-unit">ед. в процессе</div>
+            </div>
+            <div class="metric-icon" style="background:#F5F5F7">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <div class="metric-label">Lead time</div>
+              <div class="metric-value" id="resLeadTime">—</div>
+              <div class="metric-unit">мин</div>
+            </div>
+            <div class="metric-icon" style="background:#EBF4FF">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+          </div>
+          <div class="metric-card metric-card-wide">
+            <div class="metric-info">
+              <div class="metric-label">Узкое место (Bottleneck)</div>
+              <div class="metric-value metric-value-name" id="resBottleneck">—</div>
+            </div>
+            <div class="metric-icon" style="background:#FEF3F2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </div>
           </div>
         </div>
