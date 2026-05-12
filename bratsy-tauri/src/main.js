@@ -564,8 +564,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('resLeadTime').textContent   = lead_time > 0 ? lead_time.toFixed(1) : '—';
 
     const bn = document.getElementById('resBottleneck');
-    bn.textContent = bottleneck ? bottleneck.replace(/_/g, ' ') : '—';
-    bn.classList.toggle('metric-value-alert', !!bottleneck);
+    if (bn) {
+      bn.textContent = bottleneck ? bottleneck.replace(/_/g, ' ') : '—';
+      bn.classList.toggle('metric-value-alert', !!bottleneck);
+    }
 
     showResultsPanel(true);
   });
