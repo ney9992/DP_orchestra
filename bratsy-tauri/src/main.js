@@ -355,33 +355,45 @@ function setCardStopIcon(card, isStop) {
   }
 }
 
-// ── Log panel ─────────────────────────────────────────────────
+// ── Log panel (двойная: logPanel1 для шага 1, logPanel2 для шага 2) ──
 const LOG_MAX = 200;
-let logLines = [];
+const logLines = { 1: [], 2: [] };
+let activeLogId = 1; // текущая активная панель
+
+function logPanelEl() { return document.getElementById(`logPanel${activeLogId}`); }
+function logBodyEl()  { return document.getElementById(`logBody${activeLogId}`); }
+function logTitleEl() { return document.getElementById(`logTitle${activeLogId}`); }
 
 function showLogPanel(v) {
-  const p = document.getElementById('logPanel');
-  if (v) p.classList.add('visible'); else p.classList.remove('visible');
+  const p = logPanelEl();
+  if (p) { if (v) p.classList.add('visible'); else p.classList.remove('visible'); }
 }
-document.getElementById('logClose')?.addEventListener('click', () => showLogPanel(false));
+document.getElementById('logClose1')?.addEventListener('click', () => {
+  activeLogId = 1; showLogPanel(false);
+});
+document.getElementById('logClose2')?.addEventListener('click', () => {
+  activeLogId = 2; showLogPanel(false);
+});
 
 function setLogTitle(t) {
-  const el = document.getElementById('logTitle');
+  const el = logTitleEl();
   if (el) el.textContent = `● ${t} — лог`;
 }
 function clearLog() {
-  logLines = [];
-  const b = document.getElementById('logBody');
+  logLines[activeLogId] = [];
+  const b = logBodyEl();
   if (b) b.innerHTML = '';
 }
 function appendLog(stage, line) {
-  const body = document.getElementById('logBody');
+  const body = logBodyEl();
   if (!body) return;
   const now = new Date();
   const ts = [now.getHours(), now.getMinutes(), now.getSeconds()]
     .map(n => String(n).padStart(2, '0')).join(':');
-  logLines.push(line);
-  if (logLines.length > LOG_MAX) { logLines.shift(); body.firstChild?.remove(); }
+  logLines[activeLogId].push(line);
+  if (logLines[activeLogId].length > LOG_MAX) {
+    logLines[activeLogId].shift(); body.firstChild?.remove();
+  }
   const row = document.createElement('div');
   row.className = 'log-line';
   row.innerHTML = `<span class="log-ts">${ts}</span><span class="log-text">${escapeHtml(line)}</span>`;
