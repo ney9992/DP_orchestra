@@ -28,7 +28,7 @@ setInterval(() => {
 
 // ── Step state machine ────────────────────────────────────────
 const IMPORT_STAGES = new Set(['pdm', 'excel', 'autocad']);
-const SIM_STAGES    = new Set(['plantsim', 'visual_components']);
+const SIM_STAGES    = new Set(['plantsim']);
 const importDone    = new Set();
 const simDone       = new Set();
 
