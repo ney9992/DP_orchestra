@@ -4,8 +4,15 @@
 
 Set-Location "$PSScriptRoot\bratsy-tauri"
 
-# ── 1. Build ─────────────────────────────────────────────────────
+# ── 1. Clean cached artifacts to force frontend re-embed ─────────
 Write-Host ""
+Write-Host "==> Cleaning build cache..." -ForegroundColor Cyan
+$buildDir = ".\src-tauri\target\release"
+Get-ChildItem "$buildDir\build\bratsy-tauri-*"      -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
+Get-ChildItem "$buildDir\.fingerprint\bratsy-tauri-*" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
+Remove-Item "$buildDir\bratsy-tauri.exe" -Force -ErrorAction SilentlyContinue
+
+# ── 2. Build ─────────────────────────────────────────────────────
 Write-Host "==> Building..." -ForegroundColor Cyan
 & ".\node_modules\.bin\tauri.cmd" build
 if ($LASTEXITCODE -ne 0) {
