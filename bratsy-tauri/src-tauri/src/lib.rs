@@ -290,21 +290,38 @@ if ($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {{ Write-Output
 const LNK_BYTES: &[u8] = include_bytes!("../resources/DP_Plant_Simulation.exe.lnk");
 const LNK_NAME: &str = "DP_Plant_Simulation.exe.lnk";
 
-/// Гарантирует наличие .lnk рядом с exe. Если нет — извлекает из бинарника.
-fn ensure_lnk() -> PathBuf {
-    let path = app_dir().join(LNK_NAME);
-    if !path.exists() {
-        let _ = std::fs::write(&path, LNK_BYTES);
-    }
-    path
-}
-
 /// Возвращает директорию исполняемого файла приложения.
 fn app_dir() -> PathBuf {
     std::env::current_exe()
         .ok()
         .and_then(|p| p.parent().map(|d| d.to_path_buf()))
         .unwrap_or_else(|| PathBuf::from("."))
+}
+
+/// Возвращает записываемую директорию для рабочих файлов (.lnk, results.txt).
+/// Если exe в Program Files (нет прав на запись) — использует %APPDATA%\Digital Factory\.
+fn writable_dir() -> PathBuf {
+    let exe_dir = app_dir();
+    let probe = exe_dir.join(".write_probe");
+    if std::fs::write(&probe, b"").is_ok() {
+        let _ = std::fs::remove_file(&probe);
+        return exe_dir;
+    }
+    // Program Files или другая защищённая директория — пишем в AppData
+    let appdata = std::env::var("APPDATA")
+        .map(|p| PathBuf::from(p).join("Digital Factory"))
+        .unwrap_or(exe_dir);
+    let _ = std::fs::create_dir_all(&appdata);
+    appdata
+}
+
+/// Гарантирует наличие .lnk в записываемой директории. Если нет — извлекает из бинарника.
+fn ensure_lnk() -> PathBuf {
+    let path = writable_dir().join(LNK_NAME);
+    if !path.exists() {
+        let _ = std::fs::write(&path, LNK_BYTES);
+    }
+    path
 }
 
 /// Возвращает путь к .lnk-ярлыку Plant Simulation.
