@@ -321,13 +321,9 @@ function showLogPanel(visible) {
 document.getElementById('logClose')?.addEventListener('click', () => showLogPanel(false));
 
 function showResultsPanel(visible) {
-  const panel = document.getElementById('resultsPanel');
+  const panel = document.getElementById('simMetrics');
   if (!panel) return;
-  if (visible) {
-    panel.classList.add('visible');
-  } else {
-    panel.classList.remove('visible');
-  }
+  panel.classList.toggle('sim-metrics-visible', visible);
 }
 
 function setLogTitle(stageName) {
