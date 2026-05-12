@@ -10,6 +10,7 @@ test_*.txt
 
 # Machine-specific
 *.lnk
+!bratsy-tauri/DP_Plant_Simulation.exe.lnk
 settings.json
 .claude/settings.local.json
 
