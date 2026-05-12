@@ -557,20 +557,13 @@ body {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-top: 1.5px solid transparent;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.35s ease,
-              padding 0.3s ease;
-  border-top: 1.5px solid transparent;
-}
-
-.sim-metrics-visible {
-  max-height: 140px;
-  opacity: 1;
-  padding-top: 0;
-  padding-bottom: 16px;
-  border-top-color: var(--border);
+              padding-bottom 0.3s ease,
+              border-top-color 0.3s ease;
 }
 
 /* Название станции вместо числа */
