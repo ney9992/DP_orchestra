@@ -286,9 +286,12 @@ if ($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {{ Write-Output
     if path.is_empty() { None } else { Some(path) }
 }
 
-// Ярлык Plant Simulation встроен в бинарник — извлекается при первом запуске.
-const LNK_BYTES: &[u8] = include_bytes!("../resources/DP_Plant_Simulation.exe.lnk");
 const LNK_NAME: &str = "DP_Plant_Simulation.exe.lnk";
+// Путь к PlantSimulation по умолчанию — стандартная установка Siemens
+const PLANTSIM_DEFAULT_TARGET: &str =
+    r"C:\Program Files\Siemens\Tecnomatix Plant Simulation 16\PlantSimulation16.exe";
+const PLANTSIM_DEFAULT_WORKDIR: &str =
+    r"C:\Program Files\Siemens\Tecnomatix Plant Simulation 16";
 
 /// Возвращает директорию исполняемого файла приложения.
 fn app_dir() -> PathBuf {
@@ -298,8 +301,8 @@ fn app_dir() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("."))
 }
 
-/// Возвращает записываемую директорию для .lnk и results.txt.
-/// Пробует: рядом с exe → %APPDATA%\Digital Factory\ → %LOCALAPPDATA%\Digital Factory\.
+/// Возвращает первую записываемую директорию из списка кандидатов.
+/// Порядок: рядом с exe → %APPDATA%\Digital Factory\ → %LOCALAPPDATA%\Digital Factory\.
 fn writable_dir() -> PathBuf {
     let mut candidates = vec![app_dir()];
     if let Ok(p) = std::env::var("APPDATA") {
@@ -319,32 +322,43 @@ fn writable_dir() -> PathBuf {
     candidates.into_iter().next().unwrap_or_else(|| PathBuf::from("."))
 }
 
-/// Извлекает встроенный .lnk в первую записываемую директорию.
-/// Возвращает путь к файлу или подробную ошибку с указанием пути и причины.
-fn ensure_lnk() -> Result<PathBuf, String> {
-    let mut candidates = vec![app_dir()];
-    if let Ok(p) = std::env::var("APPDATA") {
-        candidates.push(PathBuf::from(p).join("Digital Factory"));
-    }
-    if let Ok(p) = std::env::var("LOCALAPPDATA") {
-        candidates.push(PathBuf::from(p).join("Digital Factory"));
-    }
+/// Создаёт ярлык Plant Simulation через PowerShell в указанной директории.
+/// Target по умолчанию — стандартный путь Siemens.
+fn create_lnk(dir: &PathBuf) -> Result<PathBuf, String> {
+    let _ = std::fs::create_dir_all(dir);
+    let lnk_path = dir.join(LNK_NAME);
+    let lnk_str  = lnk_path.to_string_lossy().replace('"', "`\"");
+    let cmd = format!(
+        r#"$s=(New-Object -ComObject WScript.Shell).CreateShortcut("{lnk}");$s.TargetPath="{target}";$s.WorkingDirectory="{work}";$s.Save()"#,
+        lnk    = lnk_str,
+        target = PLANTSIM_DEFAULT_TARGET,
+        work   = PLANTSIM_DEFAULT_WORKDIR,
+    );
+    Command::new("powershell")
+        .args(["-ExecutionPolicy", "Bypass", "-NonInteractive", "-Command", &cmd])
+        .output()
+        .map_err(|e| format!("PowerShell недоступен: {}", e))?;
 
-    // Записать в первую доступную (всегда перезаписываем — актуальная версия из бинарника)
-    let mut last_err = String::from("нет доступных директорий для записи");
-    for dir in &candidates {
-        let _ = std::fs::create_dir_all(dir);
-        let path = dir.join(LNK_NAME);
-        match std::fs::write(&path, LNK_BYTES) {
-            Ok(_) => return Ok(path),
-            Err(e) => last_err = format!("{} — {}", dir.display(), e),
-        }
+    if lnk_path.exists() {
+        Ok(lnk_path)
+    } else {
+        Err(format!("Ярлык не создан в {}", dir.display()))
     }
-    Err(last_err)
 }
 
-/// Возвращает путь к .lnk-ярлыку Plant Simulation.
-/// Ярлык встроен в бинарник и извлекается автоматически.
+/// Гарантирует наличие ярлыка Plant Simulation в записываемой директории.
+/// Если ярлык не существует — создаёт через PowerShell.
+fn ensure_lnk() -> Result<PathBuf, String> {
+    let dir = writable_dir();
+    let lnk_path = dir.join(LNK_NAME);
+    if lnk_path.exists() {
+        return Ok(lnk_path);
+    }
+    create_lnk(&dir)
+}
+
+/// Возвращает путь к ярлыку Plant Simulation.
+/// При первом запуске создаёт ярлык автоматически.
 /// Ручное переопределение через настройки имеет приоритет.
 #[tauri::command]
 fn find_plantsim_shortcut() -> Result<String, String> {
@@ -355,7 +369,10 @@ fn find_plantsim_shortcut() -> Result<String, String> {
 
     ensure_lnk()
         .map(|p| p.to_string_lossy().into_owned())
-        .map_err(|e| format!("config: Не удалось извлечь ярлык Plant Simulation.\n\nПодробности: {}\n\nУкажите путь к ярлыку вручную в настройках.", e))
+        .map_err(|e| format!(
+            "config: Не удалось создать ярлык Plant Simulation.\n\nПричина: {}\n\nЕсли Plant Simulation установлен в нестандартную папку, укажите путь к ярлыку вручную в настройках.",
+            e
+        ))
 }
 
 /// Модифицирует .lnk-ярлык (путь к модели и метод), запускает Plant Simulation через него,
