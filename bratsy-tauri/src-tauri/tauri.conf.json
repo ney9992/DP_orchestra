@@ -37,7 +37,7 @@
       "nsis": {
         "displayLanguageSelector": false,
         "languages": ["Russian"],
-        "installMode": "perMachine"
+        "installMode": "perUser"
       }
     }
   }
