@@ -286,8 +286,17 @@ if ($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {{ Write-Output
     if path.is_empty() { None } else { Some(path) }
 }
 
+/// Возвращает директорию исполняемого файла приложения.
+fn app_dir() -> PathBuf {
+    std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|d| d.to_path_buf()))
+        .unwrap_or_else(|| PathBuf::from("."))
+}
+
 /// Возвращает путь к .lnk-ярлыку Plant Simulation.
-/// Порядок: 1) из настроек, 2) автопоиск по нескольким директориям.
+/// Порядок: 1) из настроек, 2) рядом с exe, 3) сканирование C:\Program Files\Siemens\,
+/// 4) автосоздание ярлыка если нашли PlantSimulation*.exe.
 #[tauri::command]
 fn find_plantsim_shortcut() -> Result<String, String> {
     // 1. Проверить сохранённый путь в настройках
@@ -296,57 +305,74 @@ fn find_plantsim_shortcut() -> Result<String, String> {
         return Ok(saved);
     }
 
-    // 2. Автопоиск — сканируем несколько вероятных директорий
-    let mut scan_dirs: Vec<PathBuf> = Vec::new();
+    // 2. Проверить рядом с exe (установленное приложение)
+    let lnk_next_to_exe = app_dir().join("DP_Plant_Simulation.exe.lnk");
+    if lnk_next_to_exe.exists() {
+        return Ok(lnk_next_to_exe.to_string_lossy().into_owned());
+    }
 
+    // 3. Автопоиск .lnk рядом с cwd (режим разработки)
     if let Ok(cwd) = std::env::current_dir() {
-        scan_dirs.push(cwd.clone());
-        // родительская папка (полезно если cwd = bratsy-tauri/src-tauri)
-        if let Some(parent) = cwd.parent() {
-            scan_dirs.push(parent.to_path_buf());
-            if let Some(gp) = parent.parent() {
-                scan_dirs.push(gp.to_path_buf());
-            }
-        }
-    }
-    if let Ok(exe) = std::env::current_exe() {
-        // CR-03: поднимаемся максимум на 4 уровня, останавливаемся у корня диска
-        let mut dir = exe.parent().map(|p| p.to_path_buf());
-        for _ in 0..4 {
-            match dir {
-                None => break,
-                Some(ref d) => {
-                    scan_dirs.push(d.clone());
-                    // Корень диска: parent() == None или совпадает с текущим
-                    let parent = d.parent().map(|p| p.to_path_buf());
-                    if parent.as_deref() == Some(d.as_path()) {
-                        break;
-                    }
-                    dir = parent;
-                }
-            }
-        }
-    }
-
-    // CR-02: возвращаем только .lnk с «Plant» или «Simulation» в имени
-    for dir in &scan_dirs {
-        if let Ok(entries) = std::fs::read_dir(dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.extension().and_then(|e| e.to_str()) == Some("lnk") {
-                    let name = path.file_name()
-                        .and_then(|n| n.to_str())
-                        .unwrap_or("")
-                        .to_lowercase();
-                    if name.contains("plant") || name.contains("simulation") || name.contains("цз") {
-                        return Ok(path.to_string_lossy().into_owned());
+        for dir in [cwd.clone(), cwd.parent().map(|p| p.to_path_buf()).unwrap_or_default()] {
+            if let Ok(entries) = std::fs::read_dir(&dir) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path.extension().and_then(|e| e.to_str()) == Some("lnk") {
+                        let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("").to_lowercase();
+                        if name.contains("plant") || name.contains("simulation") {
+                            return Ok(path.to_string_lossy().into_owned());
+                        }
                     }
                 }
             }
         }
     }
 
-    Err("config: Ярлык Plant Simulation не найден. Укажите путь к ярлыку в настройках приложения.".into())
+    // 4. Автопоиск PlantSimulation*.exe в C:\Program Files\Siemens\
+    let siemens = PathBuf::from(r"C:\Program Files\Siemens");
+    let mut found_exe: Option<PathBuf> = None;
+    if let Ok(entries) = std::fs::read_dir(&siemens) {
+        for entry in entries.flatten() {
+            let dir_path = entry.path();
+            if !dir_path.is_dir() { continue; }
+            let dir_name = dir_path.file_name().and_then(|n| n.to_str()).unwrap_or("").to_lowercase();
+            if dir_name.contains("plant simulation") || dir_name.contains("plantsimulation") {
+                if let Ok(inner) = std::fs::read_dir(&dir_path) {
+                    for inner_entry in inner.flatten() {
+                        let exe = inner_entry.path();
+                        if exe.extension().and_then(|e| e.to_str()) == Some("exe") {
+                            let exe_name = exe.file_name().and_then(|n| n.to_str()).unwrap_or("").to_lowercase();
+                            if exe_name.starts_with("plantsimulation") {
+                                found_exe = Some(exe);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if found_exe.is_some() { break; }
+        }
+    }
+
+    // 5. Если нашли exe — создаём ярлык рядом с нашим exe и возвращаем путь к нему
+    if let Some(ref exe_path) = found_exe {
+        let lnk_path = app_dir().join("DP_Plant_Simulation.exe.lnk");
+        let exe_dir  = exe_path.parent().map(|p| p.to_string_lossy().into_owned()).unwrap_or_default();
+        let create_cmd = format!(
+            r#"$s=(New-Object -ComObject WScript.Shell).CreateShortcut("{}");$s.TargetPath="{}";$s.WorkingDirectory="{}";$s.Save()"#,
+            lnk_path.to_string_lossy().replace('"', "`\""),
+            exe_path.to_string_lossy().replace('"', "`\""),
+            exe_dir.replace('"', "`\""),
+        );
+        let _ = Command::new("powershell")
+            .args(["-ExecutionPolicy", "Bypass", "-NonInteractive", "-Command", &create_cmd])
+            .output();
+        if lnk_path.exists() {
+            return Ok(lnk_path.to_string_lossy().into_owned());
+        }
+    }
+
+    Err("config: Plant Simulation не найден. Установите Tecnomatix Plant Simulation или укажите путь к ярлыку вручную в настройках.".into())
 }
 
 /// Модифицирует .lnk-ярлык (путь к модели и метод), запускает Plant Simulation через него,
