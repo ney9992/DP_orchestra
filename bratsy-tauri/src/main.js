@@ -450,9 +450,7 @@ document.querySelectorAll('.browse-btn').forEach(btn => {
       } else {
         const filter = targetId === 'inputPlantSimShortcut'
           ? 'Ярлык Plant Simulation (*.lnk)|*.lnk|Все файлы (*.*)|*.*'
-          : targetId === 'inputPlantSim'
-            ? 'Plant Simulation Model (*.spp)|*.spp|Все файлы (*.*)|*.*'
-            : 'Все файлы (*.*)|*.*';
+          : 'Все файлы (*.*)|*.*';
         selected = await invoke('pick_file', { title: 'Выберите файл', filter, defaultPath: input.value || '' });
       }
       if (selected) { input.value = selected; clearError(targetId); }
