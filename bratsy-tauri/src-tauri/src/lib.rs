@@ -330,15 +330,7 @@ fn ensure_lnk() -> Result<PathBuf, String> {
         candidates.push(PathBuf::from(p).join("Digital Factory"));
     }
 
-    // Если уже существует в одной из директорий — вернуть сразу
-    for dir in &candidates {
-        let path = dir.join(LNK_NAME);
-        if path.exists() {
-            return Ok(path);
-        }
-    }
-
-    // Записать в первую доступную
+    // Записать в первую доступную (всегда перезаписываем — актуальная версия из бинарника)
     let mut last_err = String::from("нет доступных директорий для записи");
     for dir in &candidates {
         let _ = std::fs::create_dir_all(dir);
