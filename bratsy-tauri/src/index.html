@@ -82,6 +82,38 @@
               </div>
 
             </div>
+
+            <!-- BOM-панель Vault PDM — внутри шага 1 -->
+            <div class="bom-panel" id="bomPanel">
+              <div class="bom-panel-header">
+                <div class="bom-panel-title-row">
+                  <span class="bom-panel-label">СОСТАВ ИЗДЕЛИЯ</span>
+                  <span class="bom-part-number" id="bomPartNumber"></span>
+                  <span class="bom-count" id="bomCount"></span>
+                </div>
+                <button class="log-close" id="bomClose" title="Закрыть">✕</button>
+              </div>
+              <div class="bom-cols-header">
+                <span class="bom-col-pn">Обозначение</span>
+                <span class="bom-col-title">Наименование</span>
+                <span class="bom-col-qty">Кол-во</span>
+                <span class="bom-col-cat">Категория</span>
+                <span class="bom-col-state">Стадия</span>
+                <span class="bom-col-files">Файлы</span>
+              </div>
+              <div class="bom-tree" id="bomTree"></div>
+            </div>
+
+            <!-- Лог шага 1 (импорт) -->
+            <div class="log-panel" id="logPanel1">
+              <div class="log-header">
+                <span class="log-dot"></span>
+                <span class="log-title" id="logTitle1">Лог</span>
+                <button class="log-close" id="logClose1" title="Закрыть">✕</button>
+              </div>
+              <div class="log-body" id="logBody1"></div>
+            </div>
+
           </div>
         </div>
 
