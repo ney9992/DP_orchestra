@@ -138,8 +138,15 @@ function resetPipeline() {
     .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
 
   activeStages.clear();
+  activeLogId = 1;
   document.getElementById('footerInfo').textContent = 'Шаг 1 из 3 — импорт данных';
-  showLogPanel(false);
+  // Спрятать обе лог-панели и BOM
+  [1, 2].forEach(id => {
+    document.getElementById(`logPanel${id}`)?.classList.remove('visible');
+    logLines[id] = [];
+    const b = document.getElementById(`logBody${id}`);
+    if (b) b.innerHTML = '';
+  });
   showBomPanel(false);
 }
 
