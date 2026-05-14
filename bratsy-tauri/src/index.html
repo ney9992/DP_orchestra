@@ -9,26 +9,30 @@
 <body>
 <div class="app">
 
-  <!-- ══ HEADER ══════════════════════════════════════════════ -->
+  <!-- ══ HEADER ══════════════════════════════════════════════════ -->
   <header class="app-header">
     <div class="header-left">
       <div class="header-icon">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
           <polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
       </div>
-      <div>
+      <div class="header-text">
         <div class="header-title">ЦИФРОВОЙ ЗАВОД</div>
         <div class="header-sub">Панель управления <span id="appVersion" class="version-badge"></span></div>
       </div>
     </div>
     <div class="header-right">
-      <span class="status-chip" id="syncStatus">● Синхр.</span>
-      <span class="status-chip" id="uptimeEl">00:00</span>
-      <span class="status-chip" id="errRate">0 ош.</span>
-      <button class="icon-btn" id="btnSettings" title="Настройки">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="status-bar-inline">
+        <span class="sbi-item"><span class="sbi-label">Sync</span> <span class="sbi-val" id="syncTime">just now</span></span>
+        <span class="sbi-sep">·</span>
+        <span class="sbi-item"><span class="sbi-label">Uptime</span> <span class="sbi-val" id="uptimeEl">00:00</span></span>
+        <span class="sbi-sep">·</span>
+        <span class="sbi-item"><span class="sbi-label">Errors</span> <span class="sbi-val" id="errRate">0</span></span>
+      </div>
+      <button class="gear-btn" id="btnSettings">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
@@ -36,128 +40,189 @@
     </div>
   </header>
 
-  <!-- ══ MAIN 3-PANEL LAYOUT ════════════════════════════════ -->
-  <div class="main-grid">
+  <!-- ══ CONTENT: LEFT + RIGHT ═══════════════════════════════════ -->
+  <div class="content-grid">
 
-    <!-- LEFT: Этапы пайплайна -->
-    <section class="panel panel-left">
-      <div class="panel-label">ЭТАПЫ ПАЙПЛАЙНА</div>
-      <div class="stages-list">
+    <!-- LEFT: аккордеон шагов (стиль 0.2.6) -->
+    <div class="left-panel">
+      <div class="steps-wrap">
 
-        <!-- Vault PDM -->
-        <div class="stage-row" data-stage="pdm">
-          <div class="stage-icon-wrap" style="background:#EBF4FB">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A6496" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <ellipse cx="12" cy="5" rx="9" ry="3"/>
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-            </svg>
+        <!-- ── ШАГ 1: Импорт ─────────────────────────────────── -->
+        <div class="step step-active" id="stepImport">
+          <div class="step-hd">
+            <div class="step-num" id="num1">1</div>
+            <div class="step-meta">
+              <div class="step-title">Импорт исходных данных</div>
+              <div class="step-hint">Загрузите данные из всех источников</div>
+            </div>
+            <div class="step-tag" id="tagImport">0 / 3 загружено</div>
           </div>
-          <div class="stage-info">
-            <div class="stage-name">Vault PDM <span>Импорт BOM</span></div>
-            <div class="stage-pill pill-idle" id="pill-pdm"><span class="dot"></span>Ожидание</div>
-          </div>
-          <div class="mode-toggle" data-stage="pdm">
-            <span class="mode-lbl test-lbl">Тест</span>
-            <div class="toggle-track"><span class="toggle-thumb"></span></div>
-            <span class="mode-lbl real-lbl">Реал</span>
+          <div class="step-body" id="bodyImport">
+            <div class="step-cards">
+
+              <div class="stage-card" data-stage="pdm">
+                <div class="stage-icon-wrap" style="background:#EAF4FB">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1A6496" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                </div>
+                <div class="stage-name">Vault PDM<br><span>Импорт BOM</span></div>
+                <div class="stage-pill pill-idle" id="pill-pdm"><span class="dot dot-gray"></span>Ожидание</div>
+                <div class="mode-toggle" data-stage="pdm">
+                  <span class="m-lbl m-test">Тест</span>
+                  <div class="toggle-track"><span class="toggle-thumb"></span></div>
+                  <span class="m-lbl m-real">Реал</span>
+                </div>
+              </div>
+
+              <div class="stage-card" data-stage="excel">
+                <div class="stage-icon-wrap" style="background:#EAF7EC">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1E7E34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                </div>
+                <div class="stage-name">Excel<br><span>Данные ТРП</span></div>
+                <div class="stage-pill pill-idle" id="pill-excel"><span class="dot dot-gray"></span>Ожидание</div>
+                <div class="mode-toggle" data-stage="excel">
+                  <span class="m-lbl m-test">Тест</span>
+                  <div class="toggle-track"><span class="toggle-thumb"></span></div>
+                  <span class="m-lbl m-real">Реал</span>
+                </div>
+              </div>
+
+              <div class="stage-card" data-stage="autocad">
+                <div class="stage-icon-wrap" style="background:#FEF3EA">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                </div>
+                <div class="stage-name">AutoCAD<br><span>Планировка цеха</span></div>
+                <div class="stage-pill pill-idle" id="pill-autocad"><span class="dot dot-gray"></span>Ожидание</div>
+                <div class="mode-toggle" data-stage="autocad">
+                  <span class="m-lbl m-test">Тест</span>
+                  <div class="toggle-track"><span class="toggle-thumb"></span></div>
+                  <span class="m-lbl m-real">Реал</span>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
 
-        <!-- Excel -->
-        <div class="stage-row" data-stage="excel">
-          <div class="stage-icon-wrap" style="background:#EBF7EE">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E7E34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="8" y1="13" x2="16" y2="13"/>
-              <line x1="8" y1="17" x2="16" y2="17"/>
-            </svg>
+        <!-- ── ШАГ 2: Симуляция ──────────────────────────────── -->
+        <div class="step step-locked" id="stepSim">
+          <div class="step-hd">
+            <div class="step-num step-num-locked" id="num2">2</div>
+            <div class="step-meta">
+              <div class="step-title">Симуляция</div>
+              <div class="step-hint">Запуск цифровых моделей завода</div>
+            </div>
+            <div class="step-tag step-tag-locked" id="tagSim">0 / 1 выполнено</div>
           </div>
-          <div class="stage-info">
-            <div class="stage-name">Excel <span>Данные ТРП</span></div>
-            <div class="stage-pill pill-idle" id="pill-excel"><span class="dot"></span>Ожидание</div>
-          </div>
-          <div class="mode-toggle" data-stage="excel">
-            <span class="mode-lbl test-lbl">Тест</span>
-            <div class="toggle-track"><span class="toggle-thumb"></span></div>
-            <span class="mode-lbl real-lbl">Реал</span>
+          <div class="step-body" id="bodySim">
+            <div class="step-cards">
+
+              <div class="stage-card" data-stage="plantsim">
+                <div class="stage-icon-wrap" style="background:#E8F5F0">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0A5045" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                </div>
+                <div class="stage-name">Tecnomatix<br><span>Plant Simulation</span></div>
+                <div class="stage-pill pill-idle" id="pill-plantsim"><span class="dot dot-gray"></span>Ожидание</div>
+                <div class="mode-toggle" data-stage="plantsim">
+                  <span class="m-lbl m-test">Тест</span>
+                  <div class="toggle-track"><span class="toggle-thumb"></span></div>
+                  <span class="m-lbl m-real">Реал</span>
+                </div>
+              </div>
+
+              <div class="stage-card card-disabled" data-stage="visual_components">
+                <div class="stage-icon-wrap" style="background:#F3EEFF">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6B35C2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </div>
+                <div class="stage-name">Visual Components<br><span>3D симуляция линии</span></div>
+                <div class="stage-pill pill-idle"><span class="dot dot-gray"></span>Ожидание</div>
+              </div>
+
+            </div>
           </div>
         </div>
 
-        <!-- AutoCAD -->
-        <div class="stage-row" data-stage="autocad">
-          <div class="stage-icon-wrap" style="background:#FFF3E0">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-              <polyline points="2 17 12 22 22 17"/>
-              <polyline points="2 12 12 17 22 12"/>
-            </svg>
+        <!-- ── ШАГ 3: Отчёт ──────────────────────────────────── -->
+        <div class="step step-locked" id="stepReport">
+          <div class="step-hd">
+            <div class="step-num step-num-report" id="num3">3</div>
+            <div class="step-meta">
+              <div class="step-title">Отчёт</div>
+              <div class="step-hint">Результаты симуляции</div>
+            </div>
+            <div class="step-tag step-tag-report" id="tagReport">Ожидание данных</div>
           </div>
-          <div class="stage-info">
-            <div class="stage-name">AutoCAD <span>Планировка цеха</span></div>
-            <div class="stage-pill pill-idle" id="pill-autocad"><span class="dot"></span>Ожидание</div>
-          </div>
-          <div class="mode-toggle" data-stage="autocad">
-            <span class="mode-lbl test-lbl">Тест</span>
-            <div class="toggle-track"><span class="toggle-thumb"></span></div>
-            <span class="mode-lbl real-lbl">Реал</span>
+          <div class="step-body" id="bodyReport">
+            <div class="report-grid">
+              <div class="report-card" id="rptLoad">
+                <div class="rpt-label">Загрузка</div>
+                <div class="rpt-value">—</div>
+                <div class="rpt-unit">%</div>
+              </div>
+              <div class="report-card" id="rptThroughput">
+                <div class="rpt-label">Выпуск</div>
+                <div class="rpt-value">—</div>
+                <div class="rpt-unit">ед/ч</div>
+              </div>
+              <div class="report-card" id="rptCycleTime">
+                <div class="rpt-label">Цикл</div>
+                <div class="rpt-value">—</div>
+                <div class="rpt-unit">сек</div>
+              </div>
+              <div class="report-card" id="rptOee">
+                <div class="rpt-label">OEE</div>
+                <div class="rpt-value">—</div>
+                <div class="rpt-unit">%</div>
+              </div>
+              <div class="report-card" id="rptWip">
+                <div class="rpt-label">WIP</div>
+                <div class="rpt-value">—</div>
+                <div class="rpt-unit">ед.</div>
+              </div>
+              <div class="report-card" id="rptLeadTime">
+                <div class="rpt-label">Lead Time</div>
+                <div class="rpt-value">—</div>
+                <div class="rpt-unit">мин</div>
+              </div>
+              <div class="report-card report-card-wide" id="rptBottleneck">
+                <div class="rpt-label">Узкое место</div>
+                <div class="rpt-value rpt-value-text">—</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Plant Simulation -->
-        <div class="stage-row" data-stage="plantsim">
-          <div class="stage-icon-wrap" style="background:#E8F5F0">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0A5045" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-              <polyline points="2 17 12 22 22 17"/>
-              <polyline points="2 12 12 17 22 12"/>
-            </svg>
-          </div>
-          <div class="stage-info">
-            <div class="stage-name">Tecnomatix <span>Plant Simulation</span></div>
-            <div class="stage-pill pill-idle" id="pill-plantsim"><span class="dot"></span>Ожидание</div>
-          </div>
-          <div class="mode-toggle" data-stage="plantsim">
-            <span class="mode-lbl test-lbl">Тест</span>
-            <div class="toggle-track"><span class="toggle-thumb"></span></div>
-            <span class="mode-lbl real-lbl">Реал</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- MIDDLE: Кнопка запуска -->
-    <section class="panel panel-middle">
-      <button class="launch-btn" id="btnLaunch">
-        <svg class="launch-icon" id="launchIcon" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="5 3 19 12 5 21 5 3"/>
-        </svg>
-        <span class="launch-text" id="launchText">Запуск<br>Цифрового завода</span>
-      </button>
-      <div class="launch-status" id="launchStatus">Готов к запуску</div>
-    </section>
+      </div><!-- /.steps-wrap -->
+    </div><!-- /.left-panel -->
 
     <!-- RIGHT: Консоль -->
-    <section class="panel panel-right">
+    <div class="right-panel">
       <div class="console-topbar">
-        <span class="panel-label-sm">КОНСОЛЬ</span>
+        <span class="console-title">КОНСОЛЬ</span>
         <button class="clear-btn" id="btnClearConsole">Очистить</button>
       </div>
       <div class="console-body" id="consoleBody">
-        <span class="cline cline-sys">Система готова. Нажмите «Запуск Цифрового завода».</span>
+        <span class="cline cline-sys">Система готова. Нажмите «Запуск» ниже.</span>
       </div>
-    </section>
+    </div>
 
-  </div><!-- /.main-grid -->
+  </div><!-- /.content-grid -->
 
-  <!-- ══ SETTINGS OVERLAY ════════════════════════════════════ -->
+  <!-- ══ FOOTER: Кнопка запуска по центру ══════════════════════ -->
+  <footer class="app-footer">
+    <button class="launch-btn" id="btnLaunch">
+      <svg id="launchIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+      <span id="launchText">Запуск Цифрового завода</span>
+    </button>
+  </footer>
+
+  <!-- ══ SETTINGS OVERLAY ═══════════════════════════════════════ -->
   <div class="settings-overlay" id="settingsOverlay">
     <div class="settings-panel">
       <div class="settings-header">
         <span>НАСТРОЙКИ</span>
-        <button class="icon-btn" id="btnCloseSettings">✕</button>
+        <button class="gear-btn" id="btnCloseSettings">✕</button>
       </div>
       <div class="settings-body">
 
