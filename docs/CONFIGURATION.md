@@ -25,19 +25,22 @@ The file format is JSON. All fields are optional; missing fields are filled with
 
 | Field | Required | Default | Description |
 |---|---|---|---|
-| `plant_sim_shortcut` | **Required** (for simulation) | `""` | Absolute path to the `.lnk` shortcut file used to launch Plant Simulation 16. Validated before every simulation run; if absent or pointing to a missing file, the app opens the Settings panel automatically. |
-| `plant_sim_path` | Optional | `""` | Legacy field. Last-used `.spp` model file path. Not read by the current UI — the model file is selected via a native file dialog each run. |
-| `work_dir` | Optional | `""` | Legacy field. Working directory for downloaded Vault files (`vault/` subfolder). Required when downloading BOM attachments; the app returns an error if the directory is not set when a download is attempted. |
-| `scripts_dir` | Optional | `""` | Legacy field. Scripts folder. Not used by the current UI. |
+| `plant_sim_shortcut` | **Required** (for simulation) | `""` | Absolute path to the `.lnk` shortcut file used to launch Plant Simulation. Validated before every simulation run; if absent or pointing to a missing file, the app returns an error prompting the user to open Settings. |
+| `spp_path` | **Required** (for simulation) | `""` | Absolute path to the `.spp` Plant Simulation model file. Stored in `settings.json` and used in `run_plantsim` automatically — no file dialog shown at run time. If empty, the pipeline aborts with "Путь к .spp модели не задан". |
+| `sim_method` | **Required** (for simulation) | `""` | SimTalk method name to execute, e.g. `.UserObjects.printed`. Stored in `settings.json`. Also cached in `localStorage` as `lastSimMethod` after each successful run; this cached value is used as a fallback pre-fill when `sim_method` in settings is empty. Only alphanumeric characters, dots, underscores, hyphens, and spaces are accepted — the backend validates this before launch. |
 | `vault_url` | Optional | `""` | Vault PDM server base URL, e.g. `http://192.168.1.10:8080`. An empty string or the literal value `mock` enables mock mode — the BOM panel is populated with test data instead of contacting a real server. |
-| `vault_token` | Optional | `""` | Bearer token sent in the `Authorization` header for all Vault API requests. Not used in mock mode. |
-| `vault_part_number` | Optional | `""` | Default part number pre-filled in the BOM query prompt. If empty, the prompt asks the user to type a part number manually. |
+| `vault_token` | Optional | `""` | Authentication token sent as `token {vault_token}` in the `Authorization` header for Vault BOM API requests. Not used in mock mode. |
+| `vault_part_number` | Optional | `""` | Default part number used in the BOM query. Pre-fills the `partNumber` query parameter sent to the Vault API. If empty, an empty string is passed — the Vault server may return an error or a default BOM depending on its configuration. |
+
+> **Note:** The fields `plant_sim_path`, `work_dir`, and `scripts_dir` are still present in the `Settings` struct with `#[serde(default)]` for backward compatibility with existing `settings.json` files, but they are no longer exposed in the Settings UI and are not used by any active command.
 
 **Minimal working `settings.json` for simulation (no Vault):**
 
 ```json
 {
-  "plant_sim_shortcut": "C:\\Users\\User\\AppData\\Roaming\\Digital Factory\\DP_Plant_Simulation.exe.lnk"
+  "plant_sim_shortcut": "C:\\Users\\User\\AppData\\Roaming\\Digital Factory\\DP_Plant_Simulation.exe.lnk",
+  "spp_path": "D:\\Projects\\Factory\\model.spp",
+  "sim_method": ".UserObjects.printed"
 }
 ```
 
@@ -46,7 +49,8 @@ The file format is JSON. All fields are optional; missing fields are filled with
 ```json
 {
   "plant_sim_shortcut": "C:\\Users\\User\\AppData\\Roaming\\Digital Factory\\DP_Plant_Simulation.exe.lnk",
-  "work_dir": "D:\\Projects\\Factory\\data",
+  "spp_path": "D:\\Projects\\Factory\\model.spp",
+  "sim_method": ".UserObjects.printed",
   "vault_url": "http://192.168.1.10:8080",
   "vault_token": "eyJhbGciOi...",
   "vault_part_number": "МЧД-001"
@@ -55,17 +59,56 @@ The file format is JSON. All fields are optional; missing fields are filled with
 
 ### Mock Mode
 
-When `vault_url` is empty or set to `mock`, `vault_get_bom` returns a hard-coded BOM tree of seven items rooted at part number `МЧД-001` (or whatever part number is passed). File downloads in mock mode write a placeholder `[mock vault file]` byte sequence instead of contacting the server.
+When `vault_url` is empty or set to `mock`, `vault_get_bom` returns a hard-coded BOM tree of seven items rooted at part number `МЧД-001` (or whatever part number is passed). In mock mode the response is also written to `bom.json` in `writable_dir()` in the same `{"value": [...], "Count": N}` format as the real API. File downloads in mock mode write a placeholder `[mock vault file]` byte sequence instead of contacting the server.
+
+---
+
+## Vault API
+
+**Endpoint:** `GET {vault_url}/api/v1/bom`
+
+**Query parameters:**
+
+| Parameter | Value | Description |
+|---|---|---|
+| `partNumber` | `vault_part_number` setting | Root part number to fetch |
+| `useHierarchy` | `true` | Returns items as a nested hierarchy with `Childrens` arrays |
+| `includeImages` | `true` | Includes image attachments in the response |
+
+**Authorization header:** `token {vault_token}` (not `Bearer`).
+
+**Response format:**
+
+```json
+{
+  "value": [
+    {
+      "Id": 1001,
+      "ParentId": null,
+      "PartNumber": "МЧД-001",
+      "Title": "...",
+      "Childrens": [ { ... } ]
+    }
+  ],
+  "Count": 7
+}
+```
+
+The backend (`flatten_vault_value`) reads the `value` array and recurses into each item's `Childrens` array to produce a flat list of `VaultItem` structs.
+
+**BOM file output:** After every successful `vault_get_bom` call (both mock and real), the raw JSON response is written to `writable_dir()/bom.json`. This file is the source used by the `bom_to_xml` command.
 
 ---
 
 ## UI Settings (localStorage)
 
-One key is persisted in the WebView's `localStorage`. It is specific to the WebView profile and does not appear in `settings.json`.
+The following keys are persisted in the WebView's `localStorage`. They are specific to the WebView profile and do not appear in `settings.json`.
 
 | Key | Default | Description |
 |---|---|---|
-| `lastSimMethod` | `.UserObjects.printed` | The SimTalk method name last used in the simulation run prompt. Pre-populated in the dialog on the next run. |
+| `mode_{stage}` | `test` | Per-stage mode toggle. Valid values: `test` \| `real`. One key per pipeline stage (`mode_pdm`, `mode_excel`, `mode_autocad`, `mode_plantsim`). |
+| `lastSimMethod` | (empty) | The SimTalk method name from the most recent successful simulation run. Used as a fallback pre-fill when `sim_method` in `settings.json` is empty. |
+| `panelLeftPct` | (CSS default) | Left panel width as a percentage (range 20–80). Set by the resize handle drag interaction; restored on next load. Stored as a decimal string, e.g. `"35.4"`. |
 
 ---
 
@@ -73,12 +116,7 @@ One key is persisted in the WebView's `localStorage`. It is specific to the WebV
 
 The backend manages a `.lnk` shortcut that points to the Plant Simulation executable. The shortcut is the mechanism by which the app passes model path and SimTalk method arguments to Plant Simulation (via `WScript.Shell` argument injection before each run).
 
-**Shortcut filename:** `DP_Plant_Simulation.exe.lnk`
-
-**Default target path (standard Siemens install):**
-```
-C:\Program Files\Siemens\Tecnomatix Plant Simulation 16\PlantSimulation16.exe
-```
+**Shortcut filename:** configured via the `plant_sim_shortcut` setting (arbitrary `.lnk` path chosen by the user).
 
 **Writable directory probe order** (`lib.rs: writable_dir()`):
 
@@ -86,17 +124,17 @@ C:\Program Files\Siemens\Tecnomatix Plant Simulation 16\PlantSimulation16.exe
 2. `%APPDATA%\Digital Factory\`
 3. `%LOCALAPPDATA%\Digital Factory\`
 
-The first directory where a write probe succeeds is used for both the `.lnk` file and `results.txt`.
+The first directory where a write probe succeeds is used for `bom.json`, `bom.xml`, and `results.txt`.
 
-**Shortcut validation:** Before each simulation run, `find_plantsim_shortcut` checks `settings.plant_sim_shortcut` for a non-empty string pointing to an existing file. If validation fails, the frontend shows a confirmation dialog offering to open the Settings panel.
+**Shortcut validation:** Before each simulation run, `find_plantsim_shortcut` checks `settings.plant_sim_shortcut` for a non-empty string pointing to an existing file. If validation fails, the frontend receives an error message prompting the user to open Settings.
 
 ---
 
 ## Simulation Results File
 
-After Plant Simulation finishes, the SimTalk macro must write a `results.txt` file into the same writable directory as the shortcut (`writable_dir()`).
+After Plant Simulation finishes, the SimTalk macro must write a `results.txt` file into `writable_dir()`.
 
-**Format:** UTF-8, one `key=value` pair per line.
+**Format:** UTF-8, any number of `key=value` pairs, one per line. All pairs are parsed dynamically — there is no fixed schema. Empty lines and lines without `=` are ignored.
 
 ```
 load=82.4
@@ -108,17 +146,9 @@ lead_time=14.2
 bottleneck=Станция_5
 ```
 
-| Key | Unit / type | Description |
-|---|---|---|
-| `load` | `f32` — percent | Average equipment load |
-| `throughput` | `f32` — units | Units produced per shift/period |
-| `cycle_time` | `f32` — minutes | Takt / cycle time |
-| `oee` | `f32` — percent | Overall Equipment Effectiveness |
-| `wip` | `f32` — units | Average work-in-progress inventory |
-| `lead_time` | `f32` — minutes | Average lead time per unit |
-| `bottleneck` | `string` | Name of the bottleneck station |
+Each parsed `key=value` pair is emitted as a `ResultEntry` and rendered as a dynamic card in the Report tab. The set of keys is not fixed — add or remove fields in the SimTalk macro and the UI adapts automatically. The file is read only when Plant Simulation exits with a success code.
 
-Missing or unparseable values default to `0.0` (or empty string for `bottleneck`). The file is read only when Plant Simulation exits with a success code.
+**BOM XML output:** The `bom_to_xml` command reads `writable_dir()/bom.json` and writes the converted XML to `writable_dir()/bom.xml`.
 
 ---
 
@@ -129,10 +159,22 @@ Missing or unparseable values default to `0.0` (or empty string for `bottleneck`
 ```json
 {
   "productName": "Digital Factory",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "identifier": "com.bratsy.digitalfactory",
   "build": {
     "frontendDist": "../src"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Digital factory control panel",
+        "width": 1400,
+        "height": 860,
+        "resizable": true,
+        "maximized": true,
+        "center": true
+      }
+    ]
   },
   "bundle": {
     "targets": ["nsis"],
@@ -149,8 +191,10 @@ Missing or unparseable values default to `0.0` (or empty string for `bottleneck`
 | Field | Value | Notes |
 |---|---|---|
 | `productName` | `Digital Factory` | Display name used by NSIS installer |
-| `version` | `0.2.6` | **Bump manually** before running `make-release.ps1` |
+| `version` | `0.3.0` | **Bump manually** before running `make-release.ps1` |
 | `identifier` | `com.bratsy.digitalfactory` | Unique app identifier |
+| `width` / `height` | `1400` / `860` | Base window dimensions; actual start size is determined by `maximized` |
+| `maximized` | `true` | Window launches maximized; `width`/`height` are the restore dimensions |
 | `installMode` | `currentUser` | Installs to `%LOCALAPPDATA%\Programs\` — no admin rights needed |
 | `webviewInstallMode` | `downloadBootstrapper` | Downloads the WebView2 bootstrapper (~2 MB) at install time if WebView2 is absent |
 | `frontendDist` | `../src` | Frontend source directory relative to `src-tauri/` |
