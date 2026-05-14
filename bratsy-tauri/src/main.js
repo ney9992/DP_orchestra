@@ -225,11 +225,11 @@ function resetAccordion() {
   document.getElementById('num3').className = 'step-num step-num-report';
   document.getElementById('num3').textContent = '3';
   document.getElementById('tagReport').textContent = 'Ожидание данных';
-  // Сбрасываем значения отчёта
-  ['rptLoad','rptThroughput','rptCycleTime','rptOee','rptWip','rptLeadTime','rptBottleneck'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.querySelector('.rpt-value').textContent = '—';
-  });
+  const grid = document.getElementById('reportGridDyn');
+  if (grid) grid.innerHTML = '';
+  const empty = document.getElementById('rptEmpty');
+  if (empty) empty.style.display = '';
+  showTab('console');
 }
 
 // ── Переключатели тест / реал ──────────────────────────────────
