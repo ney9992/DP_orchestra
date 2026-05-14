@@ -386,6 +386,12 @@ async function runReal(stage) {
     case 'pdm': {
       const s = await invoke('get_settings');
       await invoke('vault_get_bom', { partNumber: s.vault_part_number || '' });
+      try {
+        const xmlPath = await invoke('bom_to_xml');
+        clog(`BOM → XML: ${xmlPath}`, 'ok', 'pdm');
+      } catch (e) {
+        clog(`XML конвертация: ${e}`, 'warn', 'pdm');
+      }
       break;
     }
     case 'excel':
