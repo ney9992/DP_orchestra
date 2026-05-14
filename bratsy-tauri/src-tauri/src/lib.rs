@@ -815,6 +815,7 @@ pub fn run() {
             pick_folder,
             vault_get_bom,
             vault_download_file,
+            bom_to_xml,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
