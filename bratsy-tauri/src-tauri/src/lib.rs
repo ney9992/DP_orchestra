@@ -609,8 +609,12 @@ async fn vault_get_bom(
 
         let resp = client
             .get(format!("{}/api/v1/bom", base))
-            .query(&[("partNumber", &part_number)])
-            .header("Authorization", format!("Bearer {}", settings.vault_token))
+            .query(&[
+                ("partNumber", part_number.as_str()),
+                ("useHierarchy", "true"),
+                ("includeImages", "true"),
+            ])
+            .header("Authorization", format!("token {}", settings.vault_token))
             .send()
             .await
             .map_err(|e| format!("Ошибка подключения к Vault: {}", e))?;
@@ -624,9 +628,13 @@ async fn vault_get_bom(
             return Err(format!("Vault API {}: {}", code, body.chars().take(200).collect::<String>()));
         }
 
-        resp.json::<Vec<VaultItem>>()
-            .await
-            .map_err(|e| format!("Ошибка парсинга BOM: {}", e))?
+        let raw_json = resp.text().await.map_err(|e| e.to_string())?;
+        let _ = std::fs::write(writable_dir().join("bom.json"), &raw_json);
+
+        let parsed: serde_json::Value = serde_json::from_str(&raw_json)
+            .map_err(|e| format!("Ошибка парсинга BOM: {}", e))?;
+        flatten_vault_value(&parsed)
+            .map_err(|e| format!("Ошибка обработки BOM: {}", e))?
     };
 
     let _ = app_handle.emit("stage-log", StageLogPayload {
