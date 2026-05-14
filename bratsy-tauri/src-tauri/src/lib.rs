@@ -38,15 +38,15 @@ pub struct StageLogPayload {
 }
 
 #[derive(Serialize, Clone)]
+pub struct ResultEntry {
+    pub key: String,
+    pub value: String,
+}
+
+#[derive(Serialize, Clone)]
 pub struct StageResultsPayload {
     pub stage: String,
-    pub load: f32,
-    pub throughput: f32,
-    pub cycle_time: f32,
-    pub oee: f32,           // OEE %
-    pub wip: f32,           // среднее незавершённое производство, ед.
-    pub lead_time: f32,     // среднее время выпуска изделия, мин
-    pub bottleneck: String, // название станции-узкого места
+    pub entries: Vec<ResultEntry>,
 }
 
 // ── Vault PDM types ──────────────────────────────────────────────
