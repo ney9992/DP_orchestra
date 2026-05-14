@@ -697,6 +697,108 @@ async fn vault_download_file(
     Ok(save_path.to_string_lossy().into_owned())
 }
 
+// ── Vault BOM flatten (реальный API: { "value": [...], "Count": N }) ──
+
+fn flatten_vault_value(val: &serde_json::Value) -> Result<Vec<VaultItem>, String> {
+    let arr = val["value"].as_array()
+        .ok_or_else(|| "Vault API: поле 'value' не найдено".to_string())?;
+    let mut items = Vec::new();
+    for item in arr { flatten_vault_item(item, &mut items); }
+    Ok(items)
+}
+
+fn flatten_vault_item(item: &serde_json::Value, out: &mut Vec<VaultItem>) {
+    let position_num = match &item["PositionNum"] {
+        serde_json::Value::Number(n) => n.as_i64().map(|v| v as i32),
+        serde_json::Value::String(s) => s.parse::<i32>().ok(),
+        _ => None,
+    };
+    out.push(VaultItem {
+        parent_id:       item["ParentId"].as_i64(),
+        id:              item["Id"].as_i64().unwrap_or(0),
+        master_id:       item["MasterId"].as_i64().unwrap_or(0),
+        title:           item["Title"].as_str().unwrap_or("").to_string(),
+        detail:          item["Detail"].as_str().map(|s| s.to_string()),
+        part_number:     item["PartNumber"].as_str().unwrap_or("").to_string(),
+        rev_num:         item["RevNum"].as_str().map(|s| s.to_string()),
+        ver_num:         item["VerNum"].as_i64().map(|v| v as i32),
+        cat_name:        item["CatName"].as_str().map(|s| s.to_string()),
+        quant:           item["Quant"].as_f64(),
+        position_num,
+        units:           item["Units"].as_str().map(|s| s.to_string()),
+        lf_cyc_state_id: item["LfCycStateId"].as_i64().map(|v| v as i32),
+        properties:      vec![],
+        files:           vec![],
+    });
+    if let Some(children) = item["Childrens"].as_array() {
+        for child in children { flatten_vault_item(child, out); }
+    }
+}
+
+// ── BOM → XML ────────────────────────────────────────────────────────
+
+fn xml_escape(s: &str) -> String {
+    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;")
+}
+
+fn item_to_xml(item: &serde_json::Value, depth: usize) -> String {
+    let pad   = "  ".repeat(depth);
+    let pn    = xml_escape(item["PartNumber"].as_str().unwrap_or(""));
+    let title = xml_escape(item["Title"].as_str().unwrap_or(""));
+    let cat   = xml_escape(item["CatName"].as_str().unwrap_or(""));
+    let qty   = match &item["Quant"] {
+        serde_json::Value::Number(n) => n.to_string(), _ => String::new(),
+    };
+    let pos   = match &item["PositionNum"] {
+        serde_json::Value::String(s) => s.clone(),
+        serde_json::Value::Number(n) => n.to_string(),
+        _ => String::new(),
+    };
+    let mut xml = format!(
+        "{}<Item partNumber=\"{}\" title=\"{}\" category=\"{}\" qty=\"{}\" position=\"{}\">\n",
+        pad, pn, title, cat, qty, pos
+    );
+    if let Some(erp) = item["ErpInfo"].as_object() {
+        let f = |k: &str| erp.get(k).and_then(|v| v.as_f64()).unwrap_or(0.0);
+        xml += &format!(
+            "{}  <ErpInfo mass=\"{}\" length=\"{}\" width=\"{}\" height=\"{}\" area=\"{}\" volume=\"{}\"/>\n",
+            pad, f("Mass"), f("Length"), f("Width"), f("Height"), f("Area"), f("Volume")
+        );
+        for key in ["DesignSection", "ErpMaterialCode"] {
+            if let Some(s) = erp.get(key).and_then(|v| v.as_str()).filter(|s| !s.is_empty()) {
+                xml += &format!("{}  <{}>{}</{}>\n", pad, key, xml_escape(s), key);
+            }
+        }
+    }
+    if let Some(children) = item["Childrens"].as_array() {
+        if !children.is_empty() {
+            xml += &format!("{}  <Children>\n", pad);
+            for child in children { xml += &item_to_xml(child, depth + 2); }
+            xml += &format!("{}  </Children>\n", pad);
+        }
+    }
+    xml += &format!("{}</Item>\n", pad);
+    xml
+}
+
+#[tauri::command]
+fn bom_to_xml() -> Result<String, String> {
+    let bom_path = writable_dir().join("bom.json");
+    let raw = std::fs::read_to_string(&bom_path)
+        .map_err(|_| "bom.json не найден — сначала выполните этап PDM".to_string())?;
+    let parsed: serde_json::Value = serde_json::from_str(&raw)
+        .map_err(|e| format!("Ошибка парсинга bom.json: {}", e))?;
+    let items = parsed["value"].as_array()
+        .ok_or_else(|| "bom.json: поле 'value' не найдено".to_string())?;
+    let mut xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<BOM>\n".to_string();
+    for item in items { xml += &item_to_xml(item, 1); }
+    xml += "</BOM>\n";
+    let xml_path = writable_dir().join("bom.xml");
+    std::fs::write(&xml_path, xml.as_bytes())
+        .map_err(|e| format!("Ошибка записи bom.xml: {}", e))?;
+    Ok(xml_path.to_string_lossy().into_owned())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
