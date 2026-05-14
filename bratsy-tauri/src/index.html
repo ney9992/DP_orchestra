@@ -3,307 +3,221 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Factory Control Panel</title>
-  <link rel="stylesheet" href="styles.css?v=0.2.6" />
+  <title>Digital Factory</title>
+  <link rel="stylesheet" href="styles.css?v=0.3.0" />
 </head>
 <body>
-  <div class="app">
-    <div class="card">
+<div class="app">
 
-      <!-- Header -->
-      <div class="header">
-        <div class="header-left">
-          <div class="header-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-          </div>
-          <div class="header-text">
-            <div class="header-title">ЦИФРОВОЙ ЗАВОД</div>
-            <div class="header-sub">Панель управления <span id="appVersion" style="opacity:0.5;font-size:11px;margin-left:6px"></span></div>
-          </div>
-        </div>
-        <div class="header-right">
-          <div class="status-bar-inline">
-            <span class="sbi-item"><span class="sbi-label">Sync</span> <span class="sbi-val" id="syncTime">just now</span></span>
-            <span class="sbi-sep">·</span>
-            <span class="sbi-item"><span class="sbi-label">Uptime</span> <span class="sbi-val" id="uptime">00:00:00</span></span>
-            <span class="sbi-sep">·</span>
-            <span class="sbi-item"><span class="sbi-label">Errors</span> <span class="sbi-val" id="errorRate">0.0%</span></span>
-          </div>
-          <button class="gear-btn" id="gearBtn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </svg>
-          </button>
-        </div>
+  <!-- ══ HEADER ══════════════════════════════════════════════ -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
       </div>
-
-      <!-- Pipeline steps -->
-      <div class="steps-wrap">
-
-        <!-- ── STEP 1: Импорт ─────────────────────────────── -->
-        <div class="step step-active" id="stepImport">
-          <div class="step-hd">
-            <div class="step-num" id="num1">1</div>
-            <div class="step-meta">
-              <div class="step-title">Импорт исходных данных</div>
-              <div class="step-hint">Загрузите данные из всех источников перед симуляцией</div>
-            </div>
-            <div class="step-tag" id="tagImport">0 / 3 загружено</div>
-          </div>
-          <div class="step-body" id="bodyImport">
-            <div class="step-cards">
-
-              <div class="stage-card" data-stage="pdm">
-                <div class="stage-icon-wrap" style="background:#EBF4FF">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-                </div>
-                <div class="stage-name">Vault PDM<br><span>состав изделия (BOM)</span></div>
-                <div class="stage-pill pill-ready"><span class="dot dot-green"></span>Ready</div>
-              </div>
-
-              <div class="stage-card" data-stage="excel">
-                <div class="stage-icon-wrap" style="background:#F0FAF4">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#276B1B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
-                </div>
-                <div class="stage-name">Excel<br><span>нормативы и таблицы</span></div>
-                <div class="stage-pill pill-ready"><span class="dot dot-green"></span>Ready</div>
-              </div>
-
-              <div class="stage-card" data-stage="autocad">
-                <div class="stage-icon-wrap" style="background:#FEF2F2">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A32D2D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 19 2 19"/></svg>
-                </div>
-                <div class="stage-name">AutoCAD<br><span>планировочные решения</span></div>
-                <div class="stage-pill pill-ready"><span class="dot dot-green"></span>Ready</div>
-              </div>
-
-            </div>
-
-            <!-- BOM-панель Vault PDM — внутри шага 1 -->
-            <div class="bom-panel" id="bomPanel">
-              <div class="bom-panel-header">
-                <div class="bom-panel-title-row">
-                  <span class="bom-panel-label">СОСТАВ ИЗДЕЛИЯ</span>
-                  <span class="bom-part-number" id="bomPartNumber"></span>
-                  <span class="bom-count" id="bomCount"></span>
-                </div>
-                <button class="log-close" id="bomClose" title="Закрыть">✕</button>
-              </div>
-              <div class="bom-cols-header">
-                <span class="bom-col-pn">Обозначение</span>
-                <span class="bom-col-title">Наименование</span>
-                <span class="bom-col-qty">Кол-во</span>
-                <span class="bom-col-cat">Категория</span>
-                <span class="bom-col-state">Стадия</span>
-                <span class="bom-col-files">Файлы</span>
-              </div>
-              <div class="bom-tree" id="bomTree"></div>
-            </div>
-
-            <!-- Лог шага 1 (импорт) -->
-            <div class="log-panel" id="logPanel1">
-              <div class="log-header">
-                <span class="log-dot"></span>
-                <span class="log-title" id="logTitle1">Лог</span>
-                <button class="log-close" id="logClose1" title="Закрыть">✕</button>
-              </div>
-              <div class="log-body" id="logBody1"></div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ── STEP 2: Симуляция ──────────────────────────── -->
-        <div class="step step-locked" id="stepSim">
-          <div class="step-hd">
-            <div class="step-num step-num-locked" id="num2">2</div>
-            <div class="step-meta">
-              <div class="step-title">Симуляция производства</div>
-              <div class="step-hint">Запустите модели для расчёта производственных показателей</div>
-            </div>
-            <div class="step-tag step-tag-locked" id="tagSim">Ожидает импорта</div>
-          </div>
-          <div class="step-body" id="bodySim">
-            <div class="step-cards">
-
-              <div class="stage-card" data-stage="plantsim">
-                <div class="stage-icon-wrap" style="background:#E8F5F1">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0A5045" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-                </div>
-                <div class="stage-name">Tecnomatix<br><span>Plant Simulation</span></div>
-                <div class="stage-pill pill-idle"><span class="dot dot-gray"></span>Ожидание</div>
-              </div>
-
-              <div class="stage-card card-disabled" data-stage="visual_components">
-                <div class="stage-icon-wrap" style="background:#F3EEFF">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6B35C2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                </div>
-                <div class="stage-name">Visual Components<br><span>3D симуляция линии</span></div>
-                <div class="stage-pill pill-idle"><span class="dot dot-gray"></span>Ожидание</div>
-              </div>
-
-            </div>
-
-            <!-- Лог шага 2 (симуляция) -->
-            <div class="log-panel" id="logPanel2">
-              <div class="log-header">
-                <span class="log-dot"></span>
-                <span class="log-title" id="logTitle2">Лог</span>
-                <button class="log-close" id="logClose2" title="Закрыть">✕</button>
-              </div>
-              <div class="log-body" id="logBody2"></div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- ── STEP 3: Отчёт ─────────────────────────────── -->
-        <div class="step step-locked step-report" id="stepReport">
-          <div class="step-hd">
-            <div class="step-num step-num-report" id="num3">3</div>
-            <div class="step-meta">
-              <div class="step-title">Результаты расчёта</div>
-              <div class="step-hint" id="reportTs"></div>
-            </div>
-            <button class="btn-new-run" id="btnNewRun">↺ Новый расчёт</button>
-          </div>
-          <div class="step-body report-body" id="bodyReport">
-            <div class="report-grid">
-
-              <div class="report-card">
-                <div class="report-icon" style="background:#EDF7F0">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                </div>
-                <div class="report-label">Загрузка линии</div>
-                <div class="report-value" id="rptLoad">—</div>
-                <div class="report-unit">%</div>
-              </div>
-
-              <div class="report-card">
-                <div class="report-icon" style="background:#EBF4FF">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                </div>
-                <div class="report-label">Пропускная способность</div>
-                <div class="report-value" id="rptThroughput">—</div>
-                <div class="report-unit">ед./ч</div>
-              </div>
-
-              <div class="report-card">
-                <div class="report-icon" style="background:#F5F5F7">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <div class="report-label">Время цикла</div>
-                <div class="report-value" id="rptCycleTime">—</div>
-                <div class="report-unit">сек</div>
-              </div>
-
-              <div class="report-card">
-                <div class="report-icon" style="background:#FFF4E5">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C07000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                </div>
-                <div class="report-label">OEE</div>
-                <div class="report-value" id="rptOee">—</div>
-                <div class="report-unit">%</div>
-              </div>
-
-              <div class="report-card">
-                <div class="report-icon" style="background:#F5F5F7">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h5l2 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                </div>
-                <div class="report-label">WIP</div>
-                <div class="report-value" id="rptWip">—</div>
-                <div class="report-unit">ед. в работе</div>
-              </div>
-
-              <div class="report-card">
-                <div class="report-icon" style="background:#EBF4FF">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1761A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                </div>
-                <div class="report-label">Lead time</div>
-                <div class="report-value" id="rptLeadTime">—</div>
-                <div class="report-unit">мин</div>
-              </div>
-
-              <div class="report-card report-card-wide">
-                <div class="report-icon" style="background:#FEF3F2">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                </div>
-                <div class="report-label">Узкое место (Bottleneck)</div>
-                <div class="report-value report-value-name" id="rptBottleneck">—</div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /steps-wrap -->
-
-      <!-- Footer -->
-      <div class="divider"></div>
-      <div class="footer">
-        <div class="footer-info" id="footerInfo">Шаг 1 из 3 — импорт данных</div>
-        <button class="run-btn" id="runPipeline">Запустить всё</button>
+      <div>
+        <div class="header-title">ЦИФРОВОЙ ЗАВОД</div>
+        <div class="header-sub">Панель управления <span id="appVersion" class="version-badge"></span></div>
       </div>
-
     </div>
-  </div>
+    <div class="header-right">
+      <span class="status-chip" id="syncStatus">● Синхр.</span>
+      <span class="status-chip" id="uptimeEl">00:00</span>
+      <span class="status-chip" id="errRate">0 ош.</span>
+      <button class="icon-btn" id="btnSettings" title="Настройки">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
 
-  <!-- Settings panel -->
-  <div class="settings-overlay" id="settingsOverlay"></div>
-  <div class="settings-panel" id="settingsPanel">
-    <div class="settings-accent"></div>
-    <div class="settings-inner">
-      <div class="settings-title">Настройки</div>
-      <div class="settings-divider"></div>
-      <div class="settings-section-label">ПУТИ К ФАЙЛАМ</div>
+  <!-- ══ MAIN 3-PANEL LAYOUT ════════════════════════════════ -->
+  <div class="main-grid">
 
-      <div class="field-group">
-        <label class="field-label">Путь к ярлыку Plant Simulation (.lnk)</label>
-        <div class="field-row">
-          <input class="field-input" id="inputPlantSimShortcut" type="text" readonly placeholder="Укажите путь к ярлыку .lnk">
-          <button class="browse-btn" data-target="inputPlantSimShortcut" data-type="file">…</button>
+    <!-- LEFT: Этапы пайплайна -->
+    <section class="panel panel-left">
+      <div class="panel-label">ЭТАПЫ ПАЙПЛАЙНА</div>
+      <div class="stages-list">
+
+        <!-- Vault PDM -->
+        <div class="stage-row" data-stage="pdm">
+          <div class="stage-icon-wrap" style="background:#EBF4FB">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A6496" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3"/>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+            </svg>
+          </div>
+          <div class="stage-info">
+            <div class="stage-name">Vault PDM <span>Импорт BOM</span></div>
+            <div class="stage-pill pill-idle" id="pill-pdm"><span class="dot"></span>Ожидание</div>
+          </div>
+          <div class="mode-toggle" data-stage="pdm">
+            <span class="mode-lbl test-lbl">Тест</span>
+            <div class="toggle-track"><span class="toggle-thumb"></span></div>
+            <span class="mode-lbl real-lbl">Реал</span>
+          </div>
         </div>
-        <div class="field-error" id="errPlantSimShortcut">Файл не найден</div>
-      </div>
 
-      <div class="settings-section-label" style="margin-top:4px">VAULT PDM API</div>
-
-      <div class="field-group">
-        <label class="field-label">URL сервера Vault (пусто = mock-режим)</label>
-        <div class="field-row">
-          <input class="field-input" id="inputVaultUrl" type="text" placeholder="http://192.168.1.100:8080">
+        <!-- Excel -->
+        <div class="stage-row" data-stage="excel">
+          <div class="stage-icon-wrap" style="background:#EBF7EE">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E7E34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="8" y1="13" x2="16" y2="13"/>
+              <line x1="8" y1="17" x2="16" y2="17"/>
+            </svg>
+          </div>
+          <div class="stage-info">
+            <div class="stage-name">Excel <span>Данные ТРП</span></div>
+            <div class="stage-pill pill-idle" id="pill-excel"><span class="dot"></span>Ожидание</div>
+          </div>
+          <div class="mode-toggle" data-stage="excel">
+            <span class="mode-lbl test-lbl">Тест</span>
+            <div class="toggle-track"><span class="toggle-thumb"></span></div>
+            <span class="mode-lbl real-lbl">Реал</span>
+          </div>
         </div>
-      </div>
 
-      <div class="field-group">
-        <label class="field-label">Bearer-токен</label>
-        <div class="field-row">
-          <input class="field-input" id="inputVaultToken" type="password" placeholder="Токен авторизации">
+        <!-- AutoCAD -->
+        <div class="stage-row" data-stage="autocad">
+          <div class="stage-icon-wrap" style="background:#FFF3E0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+          </div>
+          <div class="stage-info">
+            <div class="stage-name">AutoCAD <span>Планировка цеха</span></div>
+            <div class="stage-pill pill-idle" id="pill-autocad"><span class="dot"></span>Ожидание</div>
+          </div>
+          <div class="mode-toggle" data-stage="autocad">
+            <span class="mode-lbl test-lbl">Тест</span>
+            <div class="toggle-track"><span class="toggle-thumb"></span></div>
+            <span class="mode-lbl real-lbl">Реал</span>
+          </div>
         </div>
-      </div>
 
-      <div class="field-group">
-        <label class="field-label">Обозначение изделия по умолчанию</label>
-        <div class="field-row">
-          <input class="field-input" id="inputVaultPartNumber" type="text" placeholder="МЧД-001">
+        <!-- Plant Simulation -->
+        <div class="stage-row" data-stage="plantsim">
+          <div class="stage-icon-wrap" style="background:#E8F5F0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0A5045" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+          </div>
+          <div class="stage-info">
+            <div class="stage-name">Tecnomatix <span>Plant Simulation</span></div>
+            <div class="stage-pill pill-idle" id="pill-plantsim"><span class="dot"></span>Ожидание</div>
+          </div>
+          <div class="mode-toggle" data-stage="plantsim">
+            <span class="mode-lbl test-lbl">Тест</span>
+            <div class="toggle-track"><span class="toggle-thumb"></span></div>
+            <span class="mode-lbl real-lbl">Реал</span>
+          </div>
         </div>
-      </div>
 
-      <div class="settings-footer-divider"></div>
-      <div class="settings-actions">
-        <button class="btn-save" id="btnSave">Сохранить</button>
-        <button class="btn-cancel" id="btnCancel">Отмена</button>
+      </div>
+    </section>
+
+    <!-- MIDDLE: Кнопка запуска -->
+    <section class="panel panel-middle">
+      <button class="launch-btn" id="btnLaunch">
+        <svg class="launch-icon" id="launchIcon" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span class="launch-text" id="launchText">Запуск<br>Цифрового завода</span>
+      </button>
+      <div class="launch-status" id="launchStatus">Готов к запуску</div>
+    </section>
+
+    <!-- RIGHT: Консоль -->
+    <section class="panel panel-right">
+      <div class="console-topbar">
+        <span class="panel-label-sm">КОНСОЛЬ</span>
+        <button class="clear-btn" id="btnClearConsole">Очистить</button>
+      </div>
+      <div class="console-body" id="consoleBody">
+        <span class="cline cline-sys">Система готова. Нажмите «Запуск Цифрового завода».</span>
+      </div>
+    </section>
+
+  </div><!-- /.main-grid -->
+
+  <!-- ══ SETTINGS OVERLAY ════════════════════════════════════ -->
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <span>НАСТРОЙКИ</span>
+        <button class="icon-btn" id="btnCloseSettings">✕</button>
+      </div>
+      <div class="settings-body">
+
+        <div class="settings-section-label">PLANT SIMULATION</div>
+
+        <div class="field-group">
+          <label class="field-label">Путь к ярлыку (.lnk)</label>
+          <div class="field-row">
+            <input class="field-input" id="inputPlantSimShortcut" type="text" readonly placeholder="Укажите путь к ярлыку .lnk">
+            <button class="browse-btn" data-target="inputPlantSimShortcut" data-type="file">…</button>
+          </div>
+          <div class="field-error" id="errPlantSimShortcut">Файл не найден</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Путь к модели (.spp)</label>
+          <div class="field-row">
+            <input class="field-input" id="inputSppPath" type="text" readonly placeholder="Выберите файл модели">
+            <button class="browse-btn" data-target="inputSppPath" data-type="file">…</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Метод SimTalk</label>
+          <div class="field-row">
+            <input class="field-input" id="inputSimMethod" type="text" placeholder=".UserObjects.printed">
+          </div>
+        </div>
+
+        <div class="settings-section-label">VAULT PDM API</div>
+
+        <div class="field-group">
+          <label class="field-label">URL сервера (пусто = mock)</label>
+          <div class="field-row">
+            <input class="field-input" id="inputVaultUrl" type="text" placeholder="http://192.168.1.100:8080">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Bearer-токен</label>
+          <div class="field-row">
+            <input class="field-input" id="inputVaultToken" type="password" placeholder="Токен авторизации">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Обозначение изделия</label>
+          <div class="field-row">
+            <input class="field-input" id="inputVaultPartNumber" type="text" placeholder="МЧД-001">
+          </div>
+        </div>
+
+        <div class="settings-actions">
+          <button class="btn-save" id="btnSave">Сохранить</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast notifications -->
   <div class="toast-container" id="toastContainer"></div>
-
-  <script src="main.js?v=0.2.6" type="module"></script>
+  <script src="main.js?v=0.3.0" type="module"></script>
 </body>
 </html>
