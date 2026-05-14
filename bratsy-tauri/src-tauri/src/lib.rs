@@ -581,7 +581,21 @@ async fn vault_get_bom(
             stage: "pdm".into(),
             line: "[mock] Vault URL не задан — загружаю тестовые данные".into(),
         });
-        vault_mock_bom(&part_number)
+        let mock = vault_mock_bom(&part_number);
+        let mock_val = serde_json::json!({
+            "value": mock.iter().map(|it| serde_json::json!({
+                "ParentId": it.parent_id, "Id": it.id, "PartNumber": it.part_number,
+                "Title": it.title, "Detail": it.detail, "CatName": it.cat_name,
+                "Quant": it.quant, "PositionNum": it.position_num,
+                "Units": it.units, "Childrens": [], "ErpInfo": null, "Properties": []
+            })).collect::<Vec<_>>(),
+            "Count": mock.len()
+        });
+        let _ = std::fs::write(
+            writable_dir().join("bom.json"),
+            serde_json::to_string_pretty(&mock_val).unwrap_or_default(),
+        );
+        mock
     } else {
         let base = settings.vault_url.trim_end_matches('/');
         let _ = app_handle.emit("stage-log", StageLogPayload {
