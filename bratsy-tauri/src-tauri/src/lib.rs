@@ -577,6 +577,17 @@ async fn stop_stage(
                 .output();
         }
 
+        // D-11: если это plantsim — дополнительно убить PlantSimulation*.exe
+        if stage == "plantsim" {
+            let _ = Command::new("taskkill")
+                .args(["/F", "/IM", "PlantSimulation*.exe", "/T"])
+                .output();
+            let _ = app_handle.emit("stage-log", StageLogPayload {
+                stage: stage.clone(),
+                line: "Остановлено принудительно — Plant Simulation завершён".to_string(),
+            });
+        }
+
         let _ = app_handle.emit("stage-status", StageStatusPayload {
             stage: stage.clone(),
             status: "error".to_string(), // остановка = error-состояние (красный пилл)
