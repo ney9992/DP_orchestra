@@ -10,7 +10,7 @@ Write-Host "==> Cleaning build cache..." -ForegroundColor Cyan
 $buildDir = ".\src-tauri\target\release"
 Get-ChildItem "$buildDir\build\dp-orchestra-*"      -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
 Get-ChildItem "$buildDir\.fingerprint\dp-orchestra-*" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
-Remove-Item "$buildDir\bratsy-tauri.exe" -Force -ErrorAction SilentlyContinue
+Remove-Item "$buildDir\dp-orchestra.exe" -Force -ErrorAction SilentlyContinue
 
 # ── 2. Build ─────────────────────────────────────────────────────
 Write-Host "==> Building..." -ForegroundColor Cyan
