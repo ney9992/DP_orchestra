@@ -404,12 +404,9 @@ async function runReal(stage) {
     case 'plantsim': {
       const s = await invoke('get_settings');
       const lnkPath = await invoke('find_plantsim_shortcut');
-      const sppPath = s.spp_path || '';
-      if (!sppPath) throw new Error('Путь к .spp модели не задан — откройте Настройки');
-      const method = s.sim_method || localStorage.getItem('lastSimMethod') || '.UserObjects.printed';
+      const method = s.sim_method || '';
       const waiter = waitForStage('plantsim');
-      await invoke('run_plantsim', { lnkPath, sppPath, method });
-      if (method) localStorage.setItem('lastSimMethod', method);
+      await invoke('run_plantsim', { lnkPath, method });
       await waiter;
       break;
     }
