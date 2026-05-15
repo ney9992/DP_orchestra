@@ -403,10 +403,26 @@ async function runReal(stage) {
     }
     case 'plantsim': {
       const s = await invoke('get_settings');
-      const lnkPath = await invoke('find_plantsim_shortcut');
+      // D-07/D-03: find_plantsim_shortcut проверяет lnk — если ошибка config: — показать диалог
+      let lnkPath;
+      try {
+        lnkPath = await invoke('find_plantsim_shortcut');
+      } catch (e) {
+        const msg = String(e.message || e);
+        if (msg.startsWith('config:')) { showConfigError(msg); }
+        else { clog(msg, 'err', 'plantsim'); }
+        throw new Error(msg);
+      }
       const method = s.sim_method || '';
       const waiter = waitForStage('plantsim');
-      await invoke('run_plantsim', { lnkPath, method });
+      try {
+        await invoke('run_plantsim', { lnkPath, method });
+      } catch (e) {
+        const msg = String(e.message || e);
+        if (msg.startsWith('config:')) { showConfigError(msg); }
+        else { clog(msg, 'err', 'plantsim'); }
+        throw new Error(msg);
+      }
       await waiter;
       break;
     }
