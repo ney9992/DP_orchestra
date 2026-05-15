@@ -451,6 +451,7 @@ async function loadSettings() {
     set('inputVaultUrl',         s.vault_url);
     set('inputVaultToken',       s.vault_token);
     set('inputVaultPartNumber',  s.vault_part_number);
+    set('inputSimTimeout', s.sim_timeout_minutes > 0 ? String(s.sim_timeout_minutes) : '');
   } catch (e) { console.error(e); }
 }
 
