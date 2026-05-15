@@ -78,10 +78,11 @@ Plans:
 3. Если work_dir или spp_path не заданы – пользователь видит диалог с кнопкой «Открыть настройки» (не падение)
 4. После симуляции создаётся архивный файл work_dir/history/YYYY-MM-DD_HH-MM-SS.txt с заголовком метаданных и содержимым results.txt
 5. Таймаут N минут → taskkill PlantSimulation*.exe + лог (не вечное ожидание)
-**Plans:** 2 plans
+**Plans:** 3 plans
 Plans:
 - [ ] 04-01-PLAN.md – Rust backend: Arguments D-06, валидация D-03/D-07, results.txt из work_dir D-04, архив D-12, таймаут D-10, stop+taskkill D-11
 - [ ] 04-02-PLAN.md – Frontend: поле таймаута в настройках, showConfigError(), SimTalk-шаблон docs/simtalk-template.md
+- [ ] 04-03-PLAN.md – Gap closure: поля inputSppPath и inputWorkDir в index.html + work_dir в loadSettings/btnSave
 **UI hint:** yes
 
 ## Progress Table
@@ -91,7 +92,7 @@ Plans:
 | 1. Настройки и конфигурация | 2/2 | Complete | 2026-05-09 |
 | 2. Управление пайплайном | 3/3 | Complete | 2026-05-09 |
 | 3. Интеграция Plant Simulation | 3/3 | Complete | 2026-05-10 |
-| 4. Данные Plant Simulation | 0/2 | Planned | - |
+| 4. Данные Plant Simulation | 0/3 | In Progress | - |
 
 ## Coverage Map
 
@@ -111,4 +112,4 @@ Plans:
 **Mapped: 10/10 – 100% coverage**
 
 ---
-*Last updated: 2026-05-15 – Phase 4 planned (2 plans: Rust backend, frontend + SimTalk docs)*
+*Last updated: 2026-05-15 – Phase 4 gap closure plan 04-03 added (inputSppPath + inputWorkDir)*
