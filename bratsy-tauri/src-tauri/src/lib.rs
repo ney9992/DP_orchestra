@@ -440,16 +440,47 @@ async fn run_plantsim(
         map.insert("plantsim".to_string(), child.id());
     }
 
-    // results.txt в той же записываемой директории, что и .lnk
-    let lnk_dir = writable_dir();
+    // D-04: results.txt читается из work_dir, а не writable_dir
+    let lnk_dir = PathBuf::from(&settings.work_dir);
+
+    // D-09: таймаут — default 2 минуты, если 0 или не задан
+    let timeout_secs = {
+        let mins = settings.sim_timeout_minutes;
+        if mins == 0 { 2 * 60u64 } else { mins as u64 * 60 }
+    };
+    let spp_path_for_archive = settings.spp_path.clone();
+    let method_for_archive = method.clone();
 
     let app_clone = app_handle.clone();
     let state_arc = state.0.clone();
 
     tauri::async_runtime::spawn_blocking(move || {
-        let status_ok = match child.wait() {
-            Ok(s) => s.success(),
-            Err(_) => false,
+        // D-10: таймаут через parallel thread — Child::wait_timeout недоступен в stdlib
+        let (tx, rx) = std::sync::mpsc::channel::<bool>();
+        let mut child_for_wait = child;
+        // Клонируем app_clone для использования внутри std::thread::spawn
+        let app_for_timeout = app_clone.clone();
+        std::thread::spawn(move || {
+            let ok = match child_for_wait.wait() {
+                Ok(s) => s.success(),
+                Err(_) => false,
+            };
+            let _ = tx.send(ok);
+        });
+
+        let status_ok = match rx.recv_timeout(std::time::Duration::from_secs(timeout_secs)) {
+            Ok(ok) => ok,
+            Err(_) => {
+                // Таймаут истёк — принудительно завершить PlantSim
+                let _ = app_for_timeout.emit("stage-log", StageLogPayload {
+                    stage: "plantsim".to_string(),
+                    line: "Таймаут истёк — Plant Simulation принудительно завершён".to_string(),
+                });
+                let _ = Command::new("taskkill")
+                    .args(["/F", "/IM", "PlantSimulation*.exe", "/T"])
+                    .output();
+                false
+            }
         };
 
         let results_path = lnk_dir.join("results.txt");
@@ -469,6 +500,44 @@ async fn run_plantsim(
                     stage: "plantsim".into(),
                     entries,
                 });
+
+                // D-05/D-12: архивировать results.txt в work_dir/history/ после успешного чтения
+                let history_dir = lnk_dir.join("history");
+                if std::fs::create_dir_all(&history_dir).is_ok() {
+                    let now = std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap_or_default();
+                    let total_secs = now.as_secs();
+                    let secs = total_secs % 60;
+                    let mins_t = (total_secs / 60) % 60;
+                    let hours = (total_secs / 3600) % 24;
+                    let days = total_secs / 86400;
+                    let (year, month, day) = days_to_ymd(days);
+                    let timestamp_file = format!(
+                        "{:04}-{:02}-{:02}_{:02}-{:02}-{:02}.txt",
+                        year, month, day, hours, mins_t, secs
+                    );
+                    let timestamp_display = format!(
+                        "{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
+                        year, month, day, hours, mins_t, secs
+                    );
+                    let archive_path = history_dir.join(&timestamp_file);
+                    let header = format!(
+                        "# DP_orchestra run {}\n# version={}\n# spp={}\n# method={}\n# work_dir={}\n# ---\n",
+                        timestamp_display,
+                        APP_VERSION,
+                        spp_path_for_archive,
+                        method_for_archive,
+                        lnk_dir.display(),
+                    );
+                    let archive_content = header + &content;
+                    if std::fs::write(&archive_path, archive_content).is_ok() {
+                        let _ = app_clone.emit("stage-log", StageLogPayload {
+                            stage: "plantsim".to_string(),
+                            line: format!("Архив: {}", archive_path.display()),
+                        });
+                    }
+                }
             }
             Err(_) => {
                 let _ = app_clone.emit("stage-log", StageLogPayload {
