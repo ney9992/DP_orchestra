@@ -1,5 +1,5 @@
 <!-- generated-by: gsd-doc-writer -->
-# Архитектура — Digital Factory (Bratsy_DP)
+# Архитектура — Digital Factory (DP_orchestra)
 
 ## Обзор системы
 
@@ -90,7 +90,7 @@ Digital Factory — это Windows-приложение на базе Tauri v2, 
 ## Структура директорий
 
 ```
-Bratsy_DP/
+DP_orchestra/
 ├── bratsy-tauri/                  # Tauri-проект (основное приложение)
 │   ├── src/                       # Frontend: HTML + CSS + JS (без шага сборки)
 │   │   ├── index.html             # Единственная страница: двухпанельный pipeline UI

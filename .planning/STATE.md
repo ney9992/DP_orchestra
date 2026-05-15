@@ -1,9 +1,9 @@
----
+﻿---
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: Phase 3 — Интеграция Plant Simulation
-current_plan: pending — работа с данными PlantSim
+current_phase: Phase 3 вЂ” РРЅС‚РµРіСЂР°С†РёСЏ Plant Simulation
+current_plan: pending вЂ” СЂР°Р±РѕС‚Р° СЃ РґР°РЅРЅС‹РјРё PlantSim
 status: in_progress
 last_updated: "2026-05-09T20:30:00.000Z"
 progress:
@@ -14,21 +14,21 @@ progress:
   percent: 67
 ---
 
-# STATE.md — Bratsy_DP
+# STATE.md вЂ” DP_orchestra
 
 ## Project Reference
 
-**Core Value:** По нажатию кнопки данные из всех подключённых систем проходят через пайплайн симуляции и возвращают экономические решения — оптимальная компоновка, загрузка, логистика, CAPEX.
+**Core Value:** РџРѕ РЅР°Р¶Р°С‚РёСЋ РєРЅРѕРїРєРё РґР°РЅРЅС‹Рµ РёР· РІСЃРµС… РїРѕРґРєР»СЋС‡С‘РЅРЅС‹С… СЃРёСЃС‚РµРј РїСЂРѕС…РѕРґСЏС‚ С‡РµСЂРµР· РїР°Р№РїР»Р°Р№РЅ СЃРёРјСѓР»СЏС†РёРё Рё РІРѕР·РІСЂР°С‰Р°СЋС‚ СЌРєРѕРЅРѕРјРёС‡РµСЃРєРёРµ СЂРµС€РµРЅРёСЏ вЂ” РѕРїС‚РёРјР°Р»СЊРЅР°СЏ РєРѕРјРїРѕРЅРѕРІРєР°, Р·Р°РіСЂСѓР·РєР°, Р»РѕРіРёСЃС‚РёРєР°, CAPEX.
 
-**Current Milestone:** v1 — Plant Simulation integration + pipeline control + observability  
+**Current Milestone:** v1 вЂ” Plant Simulation integration + pipeline control + observability  
 **Tech Stack:** Tauri v2 (Rust backend + HTML/CSS/JS frontend, WebView2)  
-**Integration Method:** Rust `std::process::Command` → PowerShell scripts
+**Integration Method:** Rust `std::process::Command` в†’ PowerShell scripts
 
 ## Current Position
 
-**Current Phase:** Phase 3 — Интеграция Plant Simulation  
-**Current Plan:** работа с входными/выходными данными Plant Simulation  
-**Status:** v1 в процессе — Phase 3 реализована, но milestone не закрыт  
+**Current Phase:** Phase 3 вЂ” РРЅС‚РµРіСЂР°С†РёСЏ Plant Simulation  
+**Current Plan:** СЂР°Р±РѕС‚Р° СЃ РІС…РѕРґРЅС‹РјРё/РІС‹С…РѕРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Plant Simulation  
+**Status:** v1 РІ РїСЂРѕС†РµСЃСЃРµ вЂ” Phase 3 СЂРµР°Р»РёР·РѕРІР°РЅР°, РЅРѕ milestone РЅРµ Р·Р°РєСЂС‹С‚  
 
 ```
 Progress: [ Phase 1 ] [ Phase 2 ] [ Phase 3 ] [ Phase 4? ]
@@ -57,7 +57,7 @@ Progress: [ Phase 1 ] [ Phase 2 ] [ Phase 3 ] [ Phase 4? ]
 
 - PowerShell + WinForms: works without dependencies on factory PCs
 - Script/macro launch instead of COM: fewer version-dependency issues, easier to maintain
-- ps2exe: single .exe, no installer — factory PCs may lack installation rights
+- ps2exe: single .exe, no installer вЂ” factory PCs may lack installation rights
 - MVP focus: monitoring + pipeline control (team must see status and start/stop stages)
 - Panel+Add_Paint for gear button: consistent with headerIcon pattern, avoids Button rendering issues
 - Timer.Enabled guard before Start(): prevents double-click animation corruption (T-01-02)
@@ -91,11 +91,11 @@ None
 
 ## Session Continuity
 
-**Last session:** 2026-05-11 — сессия возобновлена. Phase 4 research готов (04-RESEARCH.md).
+**Last session:** 2026-05-15 — сессия возобновлена. Phase 4 research готов (04-RESEARCH.md).
 
 **Текущий фокус:** Phase 4 — планирование и сквозной тест на реальном PlantSim.
 
 **Next action:** `/gsd-plan-phase 4` — RESEARCH.md уже есть, переходим к плану
 
 ---
-*Last updated: 2026-05-11 — resume-work, переход к планированию Phase 4*
+*Last updated: 2026-05-15 — resume-work, переход к планированию Phase 4*

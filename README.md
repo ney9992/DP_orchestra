@@ -123,4 +123,4 @@ bratsy-tauri/
 
 ## Поддержка
 
-GitHub: [github.com/ney9992/Bratsy_DP](https://github.com/ney9992/Bratsy_DP)
+GitHub: [github.com/ney9992/DP_orchestra](https://github.com/ney9992/DP_orchestra)

@@ -1,270 +1,270 @@
-<!-- generated-by: gsd-doc-writer -->
-# Разработка — Digital Factory (Bratsy_DP)
+﻿<!-- generated-by: gsd-doc-writer -->
+# Р Р°Р·СЂР°Р±РѕС‚РєР° вЂ” Digital Factory (DP_orchestra)
 
-## Локальная настройка среды
+## Р›РѕРєР°Р»СЊРЅР°СЏ РЅР°СЃС‚СЂРѕР№РєР° СЃСЂРµРґС‹
 
-### Зависимости
+### Р—Р°РІРёСЃРёРјРѕСЃС‚Рё
 
-| Инструмент | Версия | Назначение |
+| РРЅСЃС‚СЂСѓРјРµРЅС‚ | Р’РµСЂСЃРёСЏ | РќР°Р·РЅР°С‡РµРЅРёРµ |
 |---|---|---|
-| Rust toolchain (`rustup`, `cargo`) | stable | Компиляция Rust-бэкенда |
-| Node.js + npm | любая LTS | Tauri CLI и сборка |
-| Tauri CLI v2 | `^2` (из `node_modules`) | Запуск dev-сборки и release |
-| Windows 10 / 11 | 64-bit | Единственная поддерживаемая ОС |
-| Tecnomatix Plant Simulation 16 | опционально | Реальная симуляция; есть mock |
+| Rust toolchain (`rustup`, `cargo`) | stable | РљРѕРјРїРёР»СЏС†РёСЏ Rust-Р±СЌРєРµРЅРґР° |
+| Node.js + npm | Р»СЋР±Р°СЏ LTS | Tauri CLI Рё СЃР±РѕСЂРєР° |
+| Tauri CLI v2 | `^2` (РёР· `node_modules`) | Р—Р°РїСѓСЃРє dev-СЃР±РѕСЂРєРё Рё release |
+| Windows 10 / 11 | 64-bit | Р•РґРёРЅСЃС‚РІРµРЅРЅР°СЏ РїРѕРґРґРµСЂР¶РёРІР°РµРјР°СЏ РћРЎ |
+| Tecnomatix Plant Simulation 16 | РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ | Р РµР°Р»СЊРЅР°СЏ СЃРёРјСѓР»СЏС†РёСЏ; РµСЃС‚СЊ mock |
 
-### Шаги установки
+### РЁР°РіРё СѓСЃС‚Р°РЅРѕРІРєРё
 
 ```
-# 1. Клонировать репозиторий
-git clone https://github.com/ney9992/Bratsy_DP.git
-cd Bratsy_DP
+# 1. РљР»РѕРЅРёСЂРѕРІР°С‚СЊ СЂРµРїРѕР·РёС‚РѕСЂРёР№
+git clone https://github.com/ney9992/DP_orchestra.git
+cd DP_orchestra
 
-# 2. Установить npm-зависимости (Tauri CLI)
+# 2. РЈСЃС‚Р°РЅРѕРІРёС‚СЊ npm-Р·Р°РІРёСЃРёРјРѕСЃС‚Рё (Tauri CLI)
 cd bratsy-tauri
 npm install
 
-# 3. Скомпилировать Rust-бэкенд в режиме debug
+# 3. РЎРєРѕРјРїРёР»РёСЂРѕРІР°С‚СЊ Rust-Р±СЌРєРµРЅРґ РІ СЂРµР¶РёРјРµ debug
 cd src-tauri
 cargo build
 ```
 
-### Первый запуск
+### РџРµСЂРІС‹Р№ Р·Р°РїСѓСЃРє
 
-После успешного `cargo build` запустите собранный исполняемый файл напрямую:
+РџРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕРіРѕ `cargo build` Р·Р°РїСѓСЃС‚РёС‚Рµ СЃРѕР±СЂР°РЅРЅС‹Р№ РёСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РЅР°РїСЂСЏРјСѓСЋ:
 
 ```
-bratsy-tauri\src-tauri\target\debug\bratsy-tauri.exe
+bratsy-tauri\src-tauri\target\debug\dp-orchestra.exe
 ```
 
-Приложение открывается максимизированным (базовые размеры 1400×860). Файл `settings.json` создаётся автоматически рядом с exe при первом запуске.
+РџСЂРёР»РѕР¶РµРЅРёРµ РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РјР°РєСЃРёРјРёР·РёСЂРѕРІР°РЅРЅС‹Рј (Р±Р°Р·РѕРІС‹Рµ СЂР°Р·РјРµСЂС‹ 1400Г—860). Р¤Р°Р№Р» `settings.json` СЃРѕР·РґР°С‘С‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё СЂСЏРґРѕРј СЃ exe РїСЂРё РїРµСЂРІРѕРј Р·Р°РїСѓСЃРєРµ.
 
 ---
 
-## Команды сборки
+## РљРѕРјР°РЅРґС‹ СЃР±РѕСЂРєРё
 
-| Команда | Описание |
+| РљРѕРјР°РЅРґР° | РћРїРёСЃР°РЅРёРµ |
 |---|---|
-| `npm run tauri build` | Production-сборка + NSIS-инсталлятор в `src-tauri/target/release/bundle/nsis/` |
-| `cargo build` | Debug-компиляция Rust-бэкенда |
-| `cargo build --release` | Release-компиляция Rust-бэкенда без упаковки |
+| `npm run tauri build` | Production-СЃР±РѕСЂРєР° + NSIS-РёРЅСЃС‚Р°Р»Р»СЏС‚РѕСЂ РІ `src-tauri/target/release/bundle/nsis/` |
+| `cargo build` | Debug-РєРѕРјРїРёР»СЏС†РёСЏ Rust-Р±СЌРєРµРЅРґР° |
+| `cargo build --release` | Release-РєРѕРјРїРёР»СЏС†РёСЏ Rust-Р±СЌРєРµРЅРґР° Р±РµР· СѓРїР°РєРѕРІРєРё |
 
-Единственный скрипт в `bratsy-tauri/package.json`:
+Р•РґРёРЅСЃС‚РІРµРЅРЅС‹Р№ СЃРєСЂРёРїС‚ РІ `bratsy-tauri/package.json`:
 
 ```json
 "tauri": "tauri"
 ```
 
-Tauri CLI находится в `bratsy-tauri/node_modules/.bin/tauri.cmd`.
+Tauri CLI РЅР°С…РѕРґРёС‚СЃСЏ РІ `bratsy-tauri/node_modules/.bin/tauri.cmd`.
 
 ---
 
-## Скрипт релизной сборки
+## РЎРєСЂРёРїС‚ СЂРµР»РёР·РЅРѕР№ СЃР±РѕСЂРєРё
 
-Для создания дистрибутива используется `make-release.ps1` в корне проекта:
+Р”Р»СЏ СЃРѕР·РґР°РЅРёСЏ РґРёСЃС‚СЂРёР±СѓС‚РёРІР° РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ `make-release.ps1` РІ РєРѕСЂРЅРµ РїСЂРѕРµРєС‚Р°:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File make-release.ps1
 ```
 
-Скрипт выполняет следующие шаги:
+РЎРєСЂРёРїС‚ РІС‹РїРѕР»РЅСЏРµС‚ СЃР»РµРґСѓСЋС‰РёРµ С€Р°РіРё:
 
-1. **Очищает кэш сборки** (`target/release/build/bratsy-tauri-*`, `.fingerprint/bratsy-tauri-*`, `bratsy-tauri.exe`) — обязательно, иначе фронтенд не перевстраивается в бандл.
-2. Запускает `tauri build` через `node_modules/.bin/tauri.cmd`.
-3. Находит инсталлятор по маске `*${version}*-setup.exe` (версия берётся из `tauri.conf.json`) — фильтр по версии предотвращает захват старого инсталлятора.
-4. Собирает папку `release/Digital Factory vX.Y.Z/` с `setup.exe` и `README.txt`.
-5. Пакует в `release/Digital_Factory_vX.Y.Z.zip`.
-6. Создаёт source-архив через `git archive HEAD`.
+1. **РћС‡РёС‰Р°РµС‚ РєСЌС€ СЃР±РѕСЂРєРё** (`target/release/build/dp-orchestra-*`, `.fingerprint/dp-orchestra-*`, `dp-orchestra.exe`) вЂ” РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РёРЅР°С‡Рµ С„СЂРѕРЅС‚РµРЅРґ РЅРµ РїРµСЂРµРІСЃС‚СЂР°РёРІР°РµС‚СЃСЏ РІ Р±Р°РЅРґР».
+2. Р—Р°РїСѓСЃРєР°РµС‚ `tauri build` С‡РµСЂРµР· `node_modules/.bin/tauri.cmd`.
+3. РќР°С…РѕРґРёС‚ РёРЅСЃС‚Р°Р»Р»СЏС‚РѕСЂ РїРѕ РјР°СЃРєРµ `*${version}*-setup.exe` (РІРµСЂСЃРёСЏ Р±РµСЂС‘С‚СЃСЏ РёР· `tauri.conf.json`) вЂ” С„РёР»СЊС‚СЂ РїРѕ РІРµСЂСЃРёРё РїСЂРµРґРѕС‚РІСЂР°С‰Р°РµС‚ Р·Р°С…РІР°С‚ СЃС‚Р°СЂРѕРіРѕ РёРЅСЃС‚Р°Р»Р»СЏС‚РѕСЂР°.
+4. РЎРѕР±РёСЂР°РµС‚ РїР°РїРєСѓ `release/Digital Factory vX.Y.Z/` СЃ `setup.exe` Рё `README.txt`.
+5. РџР°РєСѓРµС‚ РІ `release/Digital_Factory_vX.Y.Z.zip`.
+6. РЎРѕР·РґР°С‘С‚ source-Р°СЂС…РёРІ С‡РµСЂРµР· `git archive HEAD`.
 
-Итоговые артефакты:
+РС‚РѕРіРѕРІС‹Рµ Р°СЂС‚РµС„Р°РєС‚С‹:
 
 ```
 release/
-  Digital_Factory_vX.Y.Z.zip       # дистрибутив
-  Digital_Factory_vX.Y.Z_source.zip  # исходники (без target/ и node_modules/)
+  Digital_Factory_vX.Y.Z.zip       # РґРёСЃС‚СЂРёР±СѓС‚РёРІ
+  Digital_Factory_vX.Y.Z_source.zip  # РёСЃС…РѕРґРЅРёРєРё (Р±РµР· target/ Рё node_modules/)
 ```
 
 ---
 
-## Управление версией
+## РЈРїСЂР°РІР»РµРЅРёРµ РІРµСЂСЃРёРµР№
 
-При выходе нового релиза нужно обновить **два места**:
+РџСЂРё РІС‹С…РѕРґРµ РЅРѕРІРѕРіРѕ СЂРµР»РёР·Р° РЅСѓР¶РЅРѕ РѕР±РЅРѕРІРёС‚СЊ **РґРІР° РјРµСЃС‚Р°**:
 
-1. **`bratsy-tauri/src-tauri/tauri.conf.json`** — поле `version`:
+1. **`bratsy-tauri/src-tauri/tauri.conf.json`** вЂ” РїРѕР»Рµ `version`:
    ```json
    { "version": "0.3.0" }
    ```
 
-2. **`bratsy-tauri/src/index.html`** — теги cache-busting в `<link>` и `<script>`:
+2. **`bratsy-tauri/src/index.html`** вЂ” С‚РµРіРё cache-busting РІ `<link>` Рё `<script>`:
    ```html
    <link rel="stylesheet" href="styles.css?v=0.3.0" />
    ```
 
-Без обновления `?v=` в `index.html` WebView2 может отдавать старый CSS/JS из кэша.
+Р‘РµР· РѕР±РЅРѕРІР»РµРЅРёСЏ `?v=` РІ `index.html` WebView2 РјРѕР¶РµС‚ РѕС‚РґР°РІР°С‚СЊ СЃС‚Р°СЂС‹Р№ CSS/JS РёР· РєСЌС€Р°.
 
 ---
 
-## Структура кода
+## РЎС‚СЂСѓРєС‚СѓСЂР° РєРѕРґР°
 
 ```
 bratsy-tauri/
-  src/                    # Фронтенд (Vanilla JS + HTML, без шага сборки)
-    index.html            # Единственная страница приложения
-    main.js               # Вся UI-логика, Tauri IPC, state machine
-    styles.css            # Стили панели управления
-    assets/               # SVG-иконки
+  src/                    # Р¤СЂРѕРЅС‚РµРЅРґ (Vanilla JS + HTML, Р±РµР· С€Р°РіР° СЃР±РѕСЂРєРё)
+    index.html            # Р•РґРёРЅСЃС‚РІРµРЅРЅР°СЏ СЃС‚СЂР°РЅРёС†Р° РїСЂРёР»РѕР¶РµРЅРёСЏ
+    main.js               # Р’СЃСЏ UI-Р»РѕРіРёРєР°, Tauri IPC, state machine
+    styles.css            # РЎС‚РёР»Рё РїР°РЅРµР»Рё СѓРїСЂР°РІР»РµРЅРёСЏ
+    assets/               # SVG-РёРєРѕРЅРєРё
   src-tauri/
     src/
-      lib.rs              # Все Tauri-команды и бизнес-логика
-      main.rs             # Точка входа (вызывает bratsy_tauri_lib::run())
-    tauri.conf.json       # Конфигурация Tauri (productName, version, окно)
-    Cargo.toml            # Rust-зависимости
+      lib.rs              # Р’СЃРµ Tauri-РєРѕРјР°РЅРґС‹ Рё Р±РёР·РЅРµСЃ-Р»РѕРіРёРєР°
+      main.rs             # РўРѕС‡РєР° РІС…РѕРґР° (РІС‹Р·С‹РІР°РµС‚ dp_orchestra_lib::run())
+    tauri.conf.json       # РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ Tauri (productName, version, РѕРєРЅРѕ)
+    Cargo.toml            # Rust-Р·Р°РІРёСЃРёРјРѕСЃС‚Рё
     capabilities/
-      default.json        # Разрешения Tauri (capability allowlist)
+      default.json        # Р Р°Р·СЂРµС€РµРЅРёСЏ Tauri (capability allowlist)
   dev-tools/
-    mock-plantsim.ps1     # Заглушка Plant Simulation для разработки
-  package.json            # npm-манифест (только Tauri CLI devDep)
-make-release.ps1          # Скрипт релизной сборки (корень проекта)
+    mock-plantsim.ps1     # Р—Р°РіР»СѓС€РєР° Plant Simulation РґР»СЏ СЂР°Р·СЂР°Р±РѕС‚РєРё
+  package.json            # npm-РјР°РЅРёС„РµСЃС‚ (С‚РѕР»СЊРєРѕ Tauri CLI devDep)
+make-release.ps1          # РЎРєСЂРёРїС‚ СЂРµР»РёР·РЅРѕР№ СЃР±РѕСЂРєРё (РєРѕСЂРµРЅСЊ РїСЂРѕРµРєС‚Р°)
 ```
 
 ---
 
-## UI-раскладка
+## UI-СЂР°СЃРєР»Р°РґРєР°
 
-Правая панель и левая панель разделены перетаскиваемым разделителем (`.resize-handle`, 5 px). Ширина левой панели персистируется в `localStorage` по ключу `panelLeftPct`.
+РџСЂР°РІР°СЏ РїР°РЅРµР»СЊ Рё Р»РµРІР°СЏ РїР°РЅРµР»СЊ СЂР°Р·РґРµР»РµРЅС‹ РїРµСЂРµС‚Р°СЃРєРёРІР°РµРјС‹Рј СЂР°Р·РґРµР»РёС‚РµР»РµРј (`.resize-handle`, 5 px). РЁРёСЂРёРЅР° Р»РµРІРѕР№ РїР°РЅРµР»Рё РїРµСЂСЃРёСЃС‚РёСЂСѓРµС‚СЃСЏ РІ `localStorage` РїРѕ РєР»СЋС‡Сѓ `panelLeftPct`.
 
-- **Левая панель** (`left-panel`, начальная ширина 50%) — аккордеон из трёх шагов пайплайна.
-- **Правая панель** (`flex: 1`) — содержит вкладки `rp-tabs`: **Console** и **Report**.
+- **Р›РµРІР°СЏ РїР°РЅРµР»СЊ** (`left-panel`, РЅР°С‡Р°Р»СЊРЅР°СЏ С€РёСЂРёРЅР° 50%) вЂ” Р°РєРєРѕСЂРґРµРѕРЅ РёР· С‚СЂС‘С… С€Р°РіРѕРІ РїР°Р№РїР»Р°Р№РЅР°.
+- **РџСЂР°РІР°СЏ РїР°РЅРµР»СЊ** (`flex: 1`) вЂ” СЃРѕРґРµСЂР¶РёС‚ РІРєР»Р°РґРєРё `rp-tabs`: **Console** Рё **Report**.
 
-Переключение вкладок реализовано функцией `showTab(tab)`. При получении события `stage-results` вкладка автоматически переключается на Report.
+РџРµСЂРµРєР»СЋС‡РµРЅРёРµ РІРєР»Р°РґРѕРє СЂРµР°Р»РёР·РѕРІР°РЅРѕ С„СѓРЅРєС†РёРµР№ `showTab(tab)`. РџСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРѕР±С‹С‚РёСЏ `stage-results` РІРєР»Р°РґРєР° Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РїРµСЂРµРєР»СЋС‡Р°РµС‚СЃСЏ РЅР° Report.
 
-Резайз: `mousedown` на `.resize-handle` → отслеживание `mousemove` → обновление `leftPanel.style.width` → сохранение `panelLeftPct` в `localStorage` при `mouseup`.
+Р РµР·Р°Р№Р·: `mousedown` РЅР° `.resize-handle` в†’ РѕС‚СЃР»РµР¶РёРІР°РЅРёРµ `mousemove` в†’ РѕР±РЅРѕРІР»РµРЅРёРµ `leftPanel.style.width` в†’ СЃРѕС…СЂР°РЅРµРЅРёРµ `panelLeftPct` РІ `localStorage` РїСЂРё `mouseup`.
 
 ---
 
 ## Mock Plant Simulation
 
-Для разработки без установленного Tecnomatix Plant Simulation используйте заглушку:
+Р”Р»СЏ СЂР°Р·СЂР°Р±РѕС‚РєРё Р±РµР· СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ Tecnomatix Plant Simulation РёСЃРїРѕР»СЊР·СѓР№С‚Рµ Р·Р°РіР»СѓС€РєСѓ:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File bratsy-tauri\dev-tools\mock-plantsim.ps1 /S "macro.spm" "C:\path\to\model.spp"
 ```
 
-Скрипт имитирует 3-шаговую симуляцию (~2 секунды), затем записывает `results.txt` в директорию `.spp`-файла в формате `key=value`. Rust-команда `run_plantsim()` читает именно этот файл и передаёт содержимое как `Vec<ResultEntry>` через событие `stage-results`.
+РЎРєСЂРёРїС‚ РёРјРёС‚РёСЂСѓРµС‚ 3-С€Р°РіРѕРІСѓСЋ СЃРёРјСѓР»СЏС†РёСЋ (~2 СЃРµРєСѓРЅРґС‹), Р·Р°С‚РµРј Р·Р°РїРёСЃС‹РІР°РµС‚ `results.txt` РІ РґРёСЂРµРєС‚РѕСЂРёСЋ `.spp`-С„Р°Р№Р»Р° РІ С„РѕСЂРјР°С‚Рµ `key=value`. Rust-РєРѕРјР°РЅРґР° `run_plantsim()` С‡РёС‚Р°РµС‚ РёРјРµРЅРЅРѕ СЌС‚РѕС‚ С„Р°Р№Р» Рё РїРµСЂРµРґР°С‘С‚ СЃРѕРґРµСЂР¶РёРјРѕРµ РєР°Рє `Vec<ResultEntry>` С‡РµСЂРµР· СЃРѕР±С‹С‚РёРµ `stage-results`.
 
 ---
 
-## Стиль кода
+## РЎС‚РёР»СЊ РєРѕРґР°
 
-В проекте нет настроенных линтеров или форматтеров (`.eslintrc`, `biome.json`, `.prettierrc` отсутствуют). Придерживайтесь паттернов, заложенных в `lib.rs`:
+Р’ РїСЂРѕРµРєС‚Рµ РЅРµС‚ РЅР°СЃС‚СЂРѕРµРЅРЅС‹С… Р»РёРЅС‚РµСЂРѕРІ РёР»Рё С„РѕСЂРјР°С‚С‚РµСЂРѕРІ (`.eslintrc`, `biome.json`, `.prettierrc` РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚). РџСЂРёРґРµСЂР¶РёРІР°Р№С‚РµСЃСЊ РїР°С‚С‚РµСЂРЅРѕРІ, Р·Р°Р»РѕР¶РµРЅРЅС‹С… РІ `lib.rs`:
 
-- **Rust:** edition 2021, `serde` для всех публичных структур, `#[serde(default)]` на всех полях `Settings`.
-- **JavaScript:** ES-модули (`"type": "module"`), без фреймворков, `window.__TAURI__.core.invoke()` для команд, `window.__TAURI__.event.listen()` для событий.
-- **PowerShell:** `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8` перед любым выводом, `-ExecutionPolicy Bypass` во всех вызовах.
+- **Rust:** edition 2021, `serde` РґР»СЏ РІСЃРµС… РїСѓР±Р»РёС‡РЅС‹С… СЃС‚СЂСѓРєС‚СѓСЂ, `#[serde(default)]` РЅР° РІСЃРµС… РїРѕР»СЏС… `Settings`.
+- **JavaScript:** ES-РјРѕРґСѓР»Рё (`"type": "module"`), Р±РµР· С„СЂРµР№РјРІРѕСЂРєРѕРІ, `window.__TAURI__.core.invoke()` РґР»СЏ РєРѕРјР°РЅРґ, `window.__TAURI__.event.listen()` РґР»СЏ СЃРѕР±С‹С‚РёР№.
+- **PowerShell:** `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8` РїРµСЂРµРґ Р»СЋР±С‹Рј РІС‹РІРѕРґРѕРј, `-ExecutionPolicy Bypass` РІРѕ РІСЃРµС… РІС‹Р·РѕРІР°С….
 
 ---
 
-## IPC-контракт фронтенд ↔ бэкенд
+## IPC-РєРѕРЅС‚СЂР°РєС‚ С„СЂРѕРЅС‚РµРЅРґ в†” Р±СЌРєРµРЅРґ
 
-### Структуры данных (Rust)
+### РЎС‚СЂСѓРєС‚СѓСЂС‹ РґР°РЅРЅС‹С… (Rust)
 
 ```rust
-// Настройки приложения (settings.json)
+// РќР°СЃС‚СЂРѕР№РєРё РїСЂРёР»РѕР¶РµРЅРёСЏ (settings.json)
 pub struct Settings {
-    pub plant_sim_shortcut: String, // путь к .lnk ярлыку PlantSim
-    pub spp_path:           String, // путь к .spp модели
-    pub sim_method:         String, // SimTalk метод
-    pub vault_url:          String, // "http://host:port" или "" для mock
-    pub vault_token:        String, // токен авторизации Vault
-    pub vault_part_number:  String, // обозначение по умолчанию
-    // legacy-поля (сохраняются в JSON, не отображаются в UI):
+    pub plant_sim_shortcut: String, // РїСѓС‚СЊ Рє .lnk СЏСЂР»С‹РєСѓ PlantSim
+    pub spp_path:           String, // РїСѓС‚СЊ Рє .spp РјРѕРґРµР»Рё
+    pub sim_method:         String, // SimTalk РјРµС‚РѕРґ
+    pub vault_url:          String, // "http://host:port" РёР»Рё "" РґР»СЏ mock
+    pub vault_token:        String, // С‚РѕРєРµРЅ Р°РІС‚РѕСЂРёР·Р°С†РёРё Vault
+    pub vault_part_number:  String, // РѕР±РѕР·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+    // legacy-РїРѕР»СЏ (СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ JSON, РЅРµ РѕС‚РѕР±СЂР°Р¶Р°СЋС‚СЃСЏ РІ UI):
     pub plant_sim_path: String,
     pub work_dir:       String,
     pub scripts_dir:    String,
 }
 
-// Единица результата симуляции
+// Р•РґРёРЅРёС†Р° СЂРµР·СѓР»СЊС‚Р°С‚Р° СЃРёРјСѓР»СЏС†РёРё
 pub struct ResultEntry { pub key: String, pub value: String }
 
-// Payload события stage-results
+// Payload СЃРѕР±С‹С‚РёСЏ stage-results
 pub struct StageResultsPayload {
     pub stage:   String,
     pub entries: Vec<ResultEntry>,
 }
 ```
 
-### Вызовы команд (invoke)
+### Р’С‹Р·РѕРІС‹ РєРѕРјР°РЅРґ (invoke)
 
-| Команда | Параметры | Описание |
+| РљРѕРјР°РЅРґР° | РџР°СЂР°РјРµС‚СЂС‹ | РћРїРёСЃР°РЅРёРµ |
 |---|---|---|
-| `get_settings` | — | Читает `settings.json` рядом с exe |
-| `save_settings` | `settings: Settings` | Сохраняет `settings.json` |
-| `find_plantsim_shortcut` | — | Возвращает путь к `.lnk` из настроек |
-| `run_plantsim` | `lnk_path, spp_path, method` | Модифицирует ярлык и запускает PlantSim, ждёт завершения |
-| `run_stage` | `stage` | Запускает один из этапов: `autocad`, `excel`, `report`, `visual_components` |
-| `stop_stage` | `stage` | Убивает процесс этапа через `taskkill /F /PID` |
-| `vault_get_bom` | `part_number` | Запрашивает BOM из Vault API или возвращает mock; сохраняет `writable_dir/bom.json` |
-| `bom_to_xml` | — | Читает `writable_dir/bom.json`, конвертирует в XML, сохраняет `writable_dir/bom.xml`, возвращает путь |
-| `vault_download_file` | `file_id, file_name` | Скачивает файл из Vault в `work_dir/vault/` |
-| `pick_file` | `title, filter, default_path` | Открывает WinForms OpenFileDialog через PowerShell |
-| `pick_folder` | `title, default_path` | Открывает WinForms FolderBrowserDialog через PowerShell |
+| `get_settings` | вЂ” | Р§РёС‚Р°РµС‚ `settings.json` СЂСЏРґРѕРј СЃ exe |
+| `save_settings` | `settings: Settings` | РЎРѕС…СЂР°РЅСЏРµС‚ `settings.json` |
+| `find_plantsim_shortcut` | вЂ” | Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСѓС‚СЊ Рє `.lnk` РёР· РЅР°СЃС‚СЂРѕРµРє |
+| `run_plantsim` | `lnk_path, spp_path, method` | РњРѕРґРёС„РёС†РёСЂСѓРµС‚ СЏСЂР»С‹Рє Рё Р·Р°РїСѓСЃРєР°РµС‚ PlantSim, Р¶РґС‘С‚ Р·Р°РІРµСЂС€РµРЅРёСЏ |
+| `run_stage` | `stage` | Р—Р°РїСѓСЃРєР°РµС‚ РѕРґРёРЅ РёР· СЌС‚Р°РїРѕРІ: `autocad`, `excel`, `report`, `visual_components` |
+| `stop_stage` | `stage` | РЈР±РёРІР°РµС‚ РїСЂРѕС†РµСЃСЃ СЌС‚Р°РїР° С‡РµСЂРµР· `taskkill /F /PID` |
+| `vault_get_bom` | `part_number` | Р—Р°РїСЂР°С€РёРІР°РµС‚ BOM РёР· Vault API РёР»Рё РІРѕР·РІСЂР°С‰Р°РµС‚ mock; СЃРѕС…СЂР°РЅСЏРµС‚ `writable_dir/bom.json` |
+| `bom_to_xml` | вЂ” | Р§РёС‚Р°РµС‚ `writable_dir/bom.json`, РєРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ РІ XML, СЃРѕС…СЂР°РЅСЏРµС‚ `writable_dir/bom.xml`, РІРѕР·РІСЂР°С‰Р°РµС‚ РїСѓС‚СЊ |
+| `vault_download_file` | `file_id, file_name` | РЎРєР°С‡РёРІР°РµС‚ С„Р°Р№Р» РёР· Vault РІ `work_dir/vault/` |
+| `pick_file` | `title, filter, default_path` | РћС‚РєСЂС‹РІР°РµС‚ WinForms OpenFileDialog С‡РµСЂРµР· PowerShell |
+| `pick_folder` | `title, default_path` | РћС‚РєСЂС‹РІР°РµС‚ WinForms FolderBrowserDialog С‡РµСЂРµР· PowerShell |
 
-### События (listen)
+### РЎРѕР±С‹С‚РёСЏ (listen)
 
-| Событие | Payload | Описание |
+| РЎРѕР±С‹С‚РёРµ | Payload | РћРїРёСЃР°РЅРёРµ |
 |---|---|---|
 | `stage-status` | `{ stage, status }` | `status`: `"running"` / `"done"` / `"error"` |
-| `stage-log` | `{ stage, line }` | Строка stdout из дочернего процесса |
-| `stage-results` | `{ stage, entries: [{key, value}, ...] }` | Результаты симуляции; UI строит карточки `.rpt-card-dyn` и переключает вкладку на Report |
-| `vault-bom` | `{ part_number, items[] }` | BOM из Vault PDM |
+| `stage-log` | `{ stage, line }` | РЎС‚СЂРѕРєР° stdout РёР· РґРѕС‡РµСЂРЅРµРіРѕ РїСЂРѕС†РµСЃСЃР° |
+| `stage-results` | `{ stage, entries: [{key, value}, ...] }` | Р РµР·СѓР»СЊС‚Р°С‚С‹ СЃРёРјСѓР»СЏС†РёРё; UI СЃС‚СЂРѕРёС‚ РєР°СЂС‚РѕС‡РєРё `.rpt-card-dyn` Рё РїРµСЂРµРєР»СЋС‡Р°РµС‚ РІРєР»Р°РґРєСѓ РЅР° Report |
+| `vault-bom` | `{ part_number, items[] }` | BOM РёР· Vault PDM |
 
-### Vault API — аутентификация
+### Vault API вЂ” Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёСЏ
 
-Заголовок авторизации для BOM-запроса:
+Р—Р°РіРѕР»РѕРІРѕРє Р°РІС‚РѕСЂРёР·Р°С†РёРё РґР»СЏ BOM-Р·Р°РїСЂРѕСЃР°:
 
 ```
 Authorization: token {vault_token}
 ```
 
-Формат ответа Vault API:
+Р¤РѕСЂРјР°С‚ РѕС‚РІРµС‚Р° Vault API:
 
 ```json
 { "value": [ { "ParentId": null, "Id": 1001, "Childrens": [...], ... } ], "Count": 7 }
 ```
 
-Разбор выполняется через `flatten_vault_value()` → `flatten_vault_item()`, которые рекурсивно обходят поле `Childrens`.
+Р Р°Р·Р±РѕСЂ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ С‡РµСЂРµР· `flatten_vault_value()` в†’ `flatten_vault_item()`, РєРѕС‚РѕСЂС‹Рµ СЂРµРєСѓСЂСЃРёРІРЅРѕ РѕР±С…РѕРґСЏС‚ РїРѕР»Рµ `Childrens`.
 
 ### State machine (main.js)
 
-Фронтенд отслеживает прогресс через два массива:
+Р¤СЂРѕРЅС‚РµРЅРґ РѕС‚СЃР»РµР¶РёРІР°РµС‚ РїСЂРѕРіСЂРµСЃСЃ С‡РµСЂРµР· РґРІР° РјР°СЃСЃРёРІР°:
 
-- `IMPORT_STAGES = ['pdm', 'excel', 'autocad']` — завершение всех трёх активирует шаг 2 (симуляция).
-- `SIM_STAGES = ['plantsim']` — завершение активирует шаг 3 (отчёт).
-- `PIPELINE = [...IMPORT_STAGES, ...SIM_STAGES]` — полный порядок выполнения.
+- `IMPORT_STAGES = ['pdm', 'excel', 'autocad']` вЂ” Р·Р°РІРµСЂС€РµРЅРёРµ РІСЃРµС… С‚СЂС‘С… Р°РєС‚РёРІРёСЂСѓРµС‚ С€Р°Рі 2 (СЃРёРјСѓР»СЏС†РёСЏ).
+- `SIM_STAGES = ['plantsim']` вЂ” Р·Р°РІРµСЂС€РµРЅРёРµ Р°РєС‚РёРІРёСЂСѓРµС‚ С€Р°Рі 3 (РѕС‚С‡С‘С‚).
+- `PIPELINE = [...IMPORT_STAGES, ...SIM_STAGES]` вЂ” РїРѕР»РЅС‹Р№ РїРѕСЂСЏРґРѕРє РІС‹РїРѕР»РЅРµРЅРёСЏ.
 
-### Пайплайн
+### РџР°Р№РїР»Р°Р№РЅ
 
-`startPipeline()` итерирует `PIPELINE` последовательно. Для каждого этапа:
-- если `localStorage.getItem('mode_{stage}') === 'real'` — вызывает `runReal(stage)`;
-- иначе — вызывает `runTest(stage)` (локальная анимация без IPC).
+`startPipeline()` РёС‚РµСЂРёСЂСѓРµС‚ `PIPELINE` РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ. Р”Р»СЏ РєР°Р¶РґРѕРіРѕ СЌС‚Р°РїР°:
+- РµСЃР»Рё `localStorage.getItem('mode_{stage}') === 'real'` вЂ” РІС‹Р·С‹РІР°РµС‚ `runReal(stage)`;
+- РёРЅР°С‡Рµ вЂ” РІС‹Р·С‹РІР°РµС‚ `runTest(stage)` (Р»РѕРєР°Р»СЊРЅР°СЏ Р°РЅРёРјР°С†РёСЏ Р±РµР· IPC).
 
-Переключатели тест/реал хранят состояние в `localStorage` по ключу `mode_{stage}`.
-
----
-
-## Соглашения по веткам и PR
-
-Соглашения по именованию веток не задокументированы в репозитории. Основная ветка — `main`.
-
-CI-пайплайн (`.github/workflows/release.yml`) срабатывает только на теги вида `v*.*.*` и публикует GitHub Release с `setup.exe`. В обычных PR автоматической сборки нет.
+РџРµСЂРµРєР»СЋС‡Р°С‚РµР»Рё С‚РµСЃС‚/СЂРµР°Р» С…СЂР°РЅСЏС‚ СЃРѕСЃС‚РѕСЏРЅРёРµ РІ `localStorage` РїРѕ РєР»СЋС‡Сѓ `mode_{stage}`.
 
 ---
 
-## Известные особенности разработки
+## РЎРѕРіР»Р°С€РµРЅРёСЏ РїРѕ РІРµС‚РєР°Рј Рё PR
 
-- **Очистка кэша перед release-сборкой обязательна.** Tauri кэширует embed фронтенда; без очистки `cargo build` внутри `tauri build` не заметит изменений в `src/`. Скрипт `make-release.ps1` делает это автоматически.
-- **Нет шага сборки для фронтенда.** `tauri.conf.json` указывает `"frontendDist": "../src"` — файлы отдаются напрямую из `bratsy-tauri/src/`. Нет webpack/vite/rollup.
-- **Диалоги файлов — через PowerShell.** `pick_file` и `pick_folder` запускают PowerShell-скрипт с WinForms — единственный способ получить нативный диалог без COM/WebView2 ограничений. Ожидаемая задержка первого открытия ~500 мс.
-- **Plant Simulation запускается через `.lnk`-ярлык.** Прямой запуск exe не поддерживает нужный формат аргументов. Ярлык указывается в настройках (`plant_sim_shortcut`).
-- **`bom.json` сохраняется в `writable_dir()`** — как при mock-режиме, так и при реальном запросе Vault. Функция `writable_dir()` выбирает первую доступную для записи директорию из цепочки: рядом с exe → `%APPDATA%\Digital Factory\` → `%LOCALAPPDATA%\Digital Factory\`.
-- **legacy-поля Settings.** Поля `plant_sim_path`, `work_dir`, `scripts_dir` сохраняются в `settings.json` для обратной совместимости, но больше не отображаются в UI настроек. Не удалять из структуры `Settings` — иначе существующие конфиги потеряют данные.
+РЎРѕРіР»Р°С€РµРЅРёСЏ РїРѕ РёРјРµРЅРѕРІР°РЅРёСЋ РІРµС‚РѕРє РЅРµ Р·Р°РґРѕРєСѓРјРµРЅС‚РёСЂРѕРІР°РЅС‹ РІ СЂРµРїРѕР·РёС‚РѕСЂРёРё. РћСЃРЅРѕРІРЅР°СЏ РІРµС‚РєР° вЂ” `main`.
+
+CI-РїР°Р№РїР»Р°Р№РЅ (`.github/workflows/release.yml`) СЃСЂР°Р±Р°С‚С‹РІР°РµС‚ С‚РѕР»СЊРєРѕ РЅР° С‚РµРіРё РІРёРґР° `v*.*.*` Рё РїСѓР±Р»РёРєСѓРµС‚ GitHub Release СЃ `setup.exe`. Р’ РѕР±С‹С‡РЅС‹С… PR Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕР№ СЃР±РѕСЂРєРё РЅРµС‚.
+
+---
+
+## РР·РІРµСЃС‚РЅС‹Рµ РѕСЃРѕР±РµРЅРЅРѕСЃС‚Рё СЂР°Р·СЂР°Р±РѕС‚РєРё
+
+- **РћС‡РёСЃС‚РєР° РєСЌС€Р° РїРµСЂРµРґ release-СЃР±РѕСЂРєРѕР№ РѕР±СЏР·Р°С‚РµР»СЊРЅР°.** Tauri РєСЌС€РёСЂСѓРµС‚ embed С„СЂРѕРЅС‚РµРЅРґР°; Р±РµР· РѕС‡РёСЃС‚РєРё `cargo build` РІРЅСѓС‚СЂРё `tauri build` РЅРµ Р·Р°РјРµС‚РёС‚ РёР·РјРµРЅРµРЅРёР№ РІ `src/`. РЎРєСЂРёРїС‚ `make-release.ps1` РґРµР»Р°РµС‚ СЌС‚Рѕ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё.
+- **РќРµС‚ С€Р°РіР° СЃР±РѕСЂРєРё РґР»СЏ С„СЂРѕРЅС‚РµРЅРґР°.** `tauri.conf.json` СѓРєР°Р·С‹РІР°РµС‚ `"frontendDist": "../src"` вЂ” С„Р°Р№Р»С‹ РѕС‚РґР°СЋС‚СЃСЏ РЅР°РїСЂСЏРјСѓСЋ РёР· `bratsy-tauri/src/`. РќРµС‚ webpack/vite/rollup.
+- **Р”РёР°Р»РѕРіРё С„Р°Р№Р»РѕРІ вЂ” С‡РµСЂРµР· PowerShell.** `pick_file` Рё `pick_folder` Р·Р°РїСѓСЃРєР°СЋС‚ PowerShell-СЃРєСЂРёРїС‚ СЃ WinForms вЂ” РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ СЃРїРѕСЃРѕР± РїРѕР»СѓС‡РёС‚СЊ РЅР°С‚РёРІРЅС‹Р№ РґРёР°Р»РѕРі Р±РµР· COM/WebView2 РѕРіСЂР°РЅРёС‡РµРЅРёР№. РћР¶РёРґР°РµРјР°СЏ Р·Р°РґРµСЂР¶РєР° РїРµСЂРІРѕРіРѕ РѕС‚РєСЂС‹С‚РёСЏ ~500 РјСЃ.
+- **Plant Simulation Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ С‡РµСЂРµР· `.lnk`-СЏСЂР»С‹Рє.** РџСЂСЏРјРѕР№ Р·Р°РїСѓСЃРє exe РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ РЅСѓР¶РЅС‹Р№ С„РѕСЂРјР°С‚ Р°СЂРіСѓРјРµРЅС‚РѕРІ. РЇСЂР»С‹Рє СѓРєР°Р·С‹РІР°РµС‚СЃСЏ РІ РЅР°СЃС‚СЂРѕР№РєР°С… (`plant_sim_shortcut`).
+- **`bom.json` СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РІ `writable_dir()`** вЂ” РєР°Рє РїСЂРё mock-СЂРµР¶РёРјРµ, С‚Р°Рє Рё РїСЂРё СЂРµР°Р»СЊРЅРѕРј Р·Р°РїСЂРѕСЃРµ Vault. Р¤СѓРЅРєС†РёСЏ `writable_dir()` РІС‹Р±РёСЂР°РµС‚ РїРµСЂРІСѓСЋ РґРѕСЃС‚СѓРїРЅСѓСЋ РґР»СЏ Р·Р°РїРёСЃРё РґРёСЂРµРєС‚РѕСЂРёСЋ РёР· С†РµРїРѕС‡РєРё: СЂСЏРґРѕРј СЃ exe в†’ `%APPDATA%\Digital Factory\` в†’ `%LOCALAPPDATA%\Digital Factory\`.
+- **legacy-РїРѕР»СЏ Settings.** РџРѕР»СЏ `plant_sim_path`, `work_dir`, `scripts_dir` СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ `settings.json` РґР»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё, РЅРѕ Р±РѕР»СЊС€Рµ РЅРµ РѕС‚РѕР±СЂР°Р¶Р°СЋС‚СЃСЏ РІ UI РЅР°СЃС‚СЂРѕРµРє. РќРµ СѓРґР°Р»СЏС‚СЊ РёР· СЃС‚СЂСѓРєС‚СѓСЂС‹ `Settings` вЂ” РёРЅР°С‡Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ РєРѕРЅС„РёРіРё РїРѕС‚РµСЂСЏСЋС‚ РґР°РЅРЅС‹Рµ.

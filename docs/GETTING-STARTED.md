@@ -1,5 +1,5 @@
 <!-- generated-by: gsd-doc-writer -->
-# Начало работы — Digital Factory (Bratsy_DP) v0.3.0
+# Начало работы — Digital Factory (DP_orchestra) v0.3.0
 
 ## Требования
 
@@ -16,7 +16,7 @@
 
 ### Шаг 1 — Скачайте дистрибутив
 
-Перейдите в раздел [Releases](https://github.com/ney9992/Bratsy_DP/releases) и скачайте архив актуальной версии:
+Перейдите в раздел [Releases](https://github.com/ney9992/DP_orchestra/releases) и скачайте архив актуальной версии:
 
 ```
 Digital_Factory_v0.3.0.zip

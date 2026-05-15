@@ -1,5 +1,5 @@
 <!-- generated-by: gsd-doc-writer -->
-# TESTING.md — Bratsy_DP (Цифровой завод)
+# TESTING.md — DP_orchestra (Цифровой завод)
 
 ## Test framework and setup
 
