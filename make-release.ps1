@@ -60,7 +60,7 @@ Pervyj zapusk:
   - Fajl jarlyка Plant Simulation izvlekaetsja avtomaticheski
   - Esli Plant Simulation ustanovlen v nestandartnoe mesto — ukazhite put v Nastrojkah
 
-Podderzhka: github.com/ney9992/Bratsy_DP
+Podderzhka: github.com/ney9992/DP_orchestra
 "@
 [System.IO.File]::WriteAllText("$outFolder\README.txt", $readme, [System.Text.Encoding]::UTF8)
 
