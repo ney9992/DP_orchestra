@@ -485,6 +485,7 @@ document.getElementById('btnSave').addEventListener('click', async () => {
       vault_token:         g('inputVaultToken'),
       vault_part_number:   g('inputVaultPartNumber'),
       sim_timeout_minutes: parseInt(g('inputSimTimeout'), 10) || 0,
+      work_dir:            g('inputWorkDir'),
     }});
     showToast('Настройки сохранены', 'success');
     settingsOverlay.classList.remove('open');
