@@ -212,18 +212,11 @@
         </div>
 
         <div class="field-group">
-          <label class="field-label">Путь к модели (.spp)</label>
+          <label class="field-label">Метод SimTalk (необязательно)</label>
           <div class="field-row">
-            <input class="field-input" id="inputSppPath" type="text" readonly placeholder="Выберите файл модели">
-            <button class="browse-btn" data-target="inputSppPath" data-type="file">…</button>
+            <input class="field-input" id="inputSimMethod" type="text" placeholder="Например: .UserObjects.Run">
           </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Метод SimTalk</label>
-          <div class="field-row">
-            <input class="field-input" id="inputSimMethod" type="text" placeholder=".UserObjects.printed">
-          </div>
+          <div class="field-hint">Если задан — вписывается в аргументы ярлыка перед запуском (/E Метод)</div>
         </div>
 
         <div class="settings-section-label">VAULT PDM API</div>
