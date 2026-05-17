@@ -179,7 +179,7 @@ function activateSimStep() {
   document.getElementById('tagImport').textContent = 'Импорт завершён';
   // Шаг 2 → active
   const s2 = document.getElementById('stepSim');
-  s2.classList.remove('step-locked');
+  s2.classList.remove('step-locked', 'step-collapsed');
   s2.classList.add('step-active');
   document.getElementById('num2').className = 'step-num';
   document.getElementById('tagSim').className = 'step-tag';
