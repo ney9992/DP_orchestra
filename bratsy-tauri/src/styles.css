@@ -170,10 +170,14 @@ body {
     max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
     opacity    0.3s ease;
 }
-.step-locked .step-body,
-.step-done   .step-body {
+.step-collapsed .step-body {
   max-height: 0 !important;
   opacity: 0;
+}
+.step-locked .step-hd,
+.step-done   .step-hd {
+  cursor: pointer;
+  user-select: none;
 }
 
 /* ── Stage cards ─────────────────────────────────────────────── */
