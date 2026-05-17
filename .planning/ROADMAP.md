@@ -80,9 +80,9 @@ Plans:
 5. Таймаут N минут → taskkill PlantSimulation*.exe + лог (не вечное ожидание)
 **Plans:** 3 plans
 Plans:
-- [ ] 04-01-PLAN.md – Rust backend: Arguments D-06, валидация D-03/D-07, results.txt из work_dir D-04, архив D-12, таймаут D-10, stop+taskkill D-11
-- [ ] 04-02-PLAN.md – Frontend: поле таймаута в настройках, showConfigError(), SimTalk-шаблон docs/simtalk-template.md
-- [ ] 04-03-PLAN.md – Gap closure: поля inputSppPath и inputWorkDir в index.html + work_dir в loadSettings/btnSave
+- [x] 04-01-PLAN.md – Rust backend: Arguments D-06, валидация D-03/D-07, results.txt из work_dir D-04, архив D-12, таймаут D-10, stop+taskkill D-11
+- [x] 04-02-PLAN.md – Frontend: поле таймаута в настройках, showConfigError(), SimTalk-шаблон docs/simtalk-template.md
+- [x] 04-03-PLAN.md – Gap closure: поля inputSppPath и inputWorkDir в index.html + work_dir в loadSettings/btnSave
 **UI hint:** yes
 
 ## Progress Table
