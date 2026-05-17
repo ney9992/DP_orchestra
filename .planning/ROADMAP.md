@@ -92,7 +92,7 @@ Plans:
 | 1. Настройки и конфигурация | 2/2 | Complete | 2026-05-09 |
 | 2. Управление пайплайном | 3/3 | Complete | 2026-05-09 |
 | 3. Интеграция Plant Simulation | 3/3 | Complete | 2026-05-10 |
-| 4. Данные Plant Simulation | 0/3 | In Progress | - |
+| 4. Данные Plant Simulation | 3/3 | Complete | 2026-05-17 |
 
 ## Coverage Map
 
