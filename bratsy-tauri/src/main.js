@@ -260,6 +260,16 @@ function applyToggle(track, thumb, testLbl, realLbl, isReal) {
   if (realLbl) realLbl.classList.toggle('active', isReal);
 }
 
+// ── Аккордеон: ручное раскрытие locked/done шагов ─────────────
+document.querySelectorAll('.step-hd').forEach(hd => {
+  hd.addEventListener('click', () => {
+    const step = hd.closest('.step');
+    if (step.classList.contains('step-locked') || step.classList.contains('step-done')) {
+      step.classList.toggle('step-collapsed');
+    }
+  });
+});
+
 // ── Кнопка запуска ─────────────────────────────────────────────
 let pipelineRunning = false;
 
